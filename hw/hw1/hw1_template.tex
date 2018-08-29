@@ -1,0 +1,211 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsfonts, amsmath}
+\usepackage{tikz}
+\usepackage[nobreak=false]{mdframed}
+\usepackage{pgf}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsthm,amssymb}
+\setlength\parindent{0pt}
+\newcommand{\solution}{\subsection*{Solution:}}
+
+\begin{document}
+
+\title{EE127 Homework 1}
+\author{Your Name Here}
+\date{\today}
+\maketitle
+
+\subsection*{Exercise 1 (CVX Installation)} 
+
+For Python users:
+Install the package CVXOPT and run the tutorial on Linear Program solvers: \url{http://cvxopt.org/examples/tutorial/lp.html}
+
+For MATLAB users: Install CVX and make sure you can run the least squares code: \url{http://cvxr.com/cvx/doc/quickstart.html}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 2 (About general optimization)}
+
+In this exercise, we test your understanding of the general framework of optimization and its language. We consider an optimization problem in standard form: 
+\begin{align*}
+    p^* = \min_{x \in \mathbb{R}^n} \: f_0(x) ~:~ f_i(x) \le 0, \;\; i=1,\ldots,m.
+\end{align*}
+In the following we denote by ${\cal X}$ the feasible set. For the following statements, provide a proof or counter-example.
+
+\begin{enumerate}
+	\item Any optimization problem can be expressed as one with a linear objective.
+	
+	\item Any optimization problem can be expressed as one without any constraints.
+	
+	\item Any optimization problem can be recast as a linear program, provided one allows for an infinite number of constraints.
+	
+	\item If one inequality is strict at the optimum, then we can remove it from the original problem and obtain the same solution.
+	
+	\item If the problem involves the minimization over more than one variable, say $y$ and $x$, then we can exchange the minimization order without altering the optimal value:
+    \begin{align*}
+    	\min_x\min_y \: F_0(x,y) = \min_y\min_x \: F_0(x,y)
+	\end{align*}
+	
+	\item If the problem involves the minimization of an objective function of the form
+    \begin{align*}
+    	f_0(x) = \max_y \: F_0(x,y),
+	\end{align*}
+    then $p^* \ge d^*$, where
+    \begin{align*}
+        p^* &:= \min_{x} \max_y F_0(x, y) \\
+    	d^* &:= \max_y \: \min_{x} \: F_0(x,y).
+	\end{align*}
+	{\em Hint:} consider the function $y \rightarrow \min_{x'} \: F_0(x',y)$ and a similar function of $x$.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 3 (1D Convolution)}
+
+A 1D convolutional filter takes an input sequence $x = (x_t)_{t \in \mathbb{Z}}$ and a finite sequence $h = (h_t)_{t \in [1, m]}$ and produces an output sequence according to the rule
+
+\[y_t = h_1x_t + h_2x_{t-1} + ... + h_mx_{t-m+1},  t \in \mathbb{Z}\]
+
+This operation is mathematically denoted $y = h * x$ and called a convolution. Now consider a sequence $x$ such that $x_t = 0$ for $t < 1$ and $t > n$. We will from now refer to \emph{infinite-dimensional} vector $x$ as the \emph{finite-dimensional} vector $(x_1, ..., x_n)$.
+
+\begin{enumerate}
+    \item Show that the output sequence $(y_t)_{t \in \mathbb{Z}}$ is zero outside a band. In particular, you will show that $y_t = 0$ for $t \leq a$ and $t > b$ for $(a, b)$ that you will determine as a function of $n$ and $m$. The output sequence can therefore be represented as a $(b-a)$-dimensional vector that we will note $y = (y_{a+1}, ..., y_{b})$.
+
+    \item Express the relationship between the output vector $y$ and $x$ as $y = T(h) \cdot x$, with $T(h)$ a matrix of shape $(b-a, n)$. What structure does that matrix have?
+
+    \item We consider two $n$-th order polynomials $p$, $q$:
+    \begin{align*}
+        p(s) &= p_0s^0 + p_1s^1 + ... + p_ns^n \\
+        q(s) &= q_0s^0 + q_1s^1 + ... + q_ns^n.
+    \end{align*}
+    Express the product of the polynomials in terms of vectors of coefficients of $p$, $q$, and powers of $s$, and a certain Toeplitz matrix, which you will determine.
+
+    \item A given $T$-vector $r$ gives the daily rainfall in some region over a period of $T$ days. The vector $h$ gives the daily height of a river in the region (above its normal height). By careful modeling of water flow, or by fitting a model to past data, it is found that these vectors are (approximately) related by convolution: $h=g*r$, where $g= (0.1,0.4,0.5,0.2)$. How  many days  after a  one day heavy rainfall is the river height most affected? And, how many days does it takes for the river height to return to the normal height once the rain stops?
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 4 (Norm and angles)}
+
+\begin{enumerate}
+    \item Let $x,y\in\mathbb{R}^{n}$ be two unit-norm vectors, that is, such that $\|x\|_2 = \|y\|_2=1$. Show that the vectors $x-y$ and $x+y$ are orthogonal. Draw on the 2D plane the two vectors and all the necessary shapes to graphically solve the exercise. You may use right angles, circles and straight lines to make your point.
+    
+    \item
+    Show that the following inequalities hold for any vector $x \in \mathbb{R}^{n}$:
+    \begin{align*}
+        \frac{1}{\sqrt{n}}\|x\|_2 \leq \|x\|_\infty \leq  \|x\|_2 \leq \|x\|_1 \leq \sqrt{n} \|x\|_2 \le n\|x\|_\infty.
+    \end{align*}
+    \textit{Hint:} think about using Cauchy-Schwarz's inequality, and instantiate it on the corresponding norms. 
+    
+    \item Show that for any non-zero vector $x$,
+    \begin{align*}
+        \text{card}(x) \ge \frac{\|x\|_1^2}{\|x\|_2^2},
+    \end{align*}
+    where $\text{card}(x)$ is the \emph{cardinality} of the vector $x$, defined as the number of non-zero elements in $x$. Find all vectors $x$ for which the lower bound is attained.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 5 (Comparing text)}
+
+In this exercise, we  use the word-fre\-quen\-cy vector representation of text 
+ for comparing  text documents. For mathematical modeling of transforming text into vectors, refers to Lecture 2, Slide 6 (Example 1: bag of words). 
+In this context, similarity between two documents may be measured by means of the angle $\theta$ between the two frequency vectors
+representing the documents, the documents being maximally ``different'' when the corresponding frequency vectors are orthogonal.
+Consider the following
+headlines from the web edition of the New York Times on Dec.\ 7, 2010:
+
+\begin{enumerate}[label=(\alph*)]
+    \item Suit Over Targeted Killing in Terror Case Is Dismissed. A federal judge on Tuesday dismissed a lawsuit that sought to block the United States from attempting to kill an American citizen, Anwar Al-Awlaki, who has been accused of aiding Al Qaeda.
+    
+    \item In Tax Deal With G.O.P., a Portent for the Next 2 Years. President Obama made clear that he was willing to alienate his liberal base in the interest of compromise. Tax Deal Suggests New Path for Obama. President Obama agreed to a tentative deal to extend the Bush tax cuts, part of a package to keep jobless aid and cut payroll taxes.
+    
+    \item Obama Urges China to Check North Koreans. In a frank discussion, President Obama urged China's president to put the North Korean government on a tighter leash after a series of provocations.
+    
+    \item Top Test Scores From Shanghai Stun Educators. With China's debut in international standardized testing, Shanghai students have surprised experts by outscoring counterparts in dozens of other countries.
+\end{enumerate}
+
+\begin{enumerate}
+    \item
+    First simplify the text (remove plurals, convert verb to infinite tense, etc.) and then find the frequency vectors   representing the text against the dictionary $V=\{$aid, kill, deal, president, tax, china$\}$.
+    
+    \item Compare the four pieces of text by computing the cosine distance (i.e the cosine of the angles) between any pairs of texts. 
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 6 (Linear functions and projections)}
+
+\begin{enumerate}
+    \item Suppose $x$ is an $n$-vector, with $n = 2m - 1$ and $m \geq 1$. We define the middle element value of $x$ as $x_m$. Define $$f(x) = x_m - \frac{1}{n}\sum_{i = 1}^n x_i$$ which is the difference between the middle element value and the average of the coefficients in $x$. Express $f$ in the form $f(x) = a^Tx$, where $a$ is an $n$-vector.
+    
+    \item Now let $b$ and $x$ be vectors of $\mathbb{R}^2$ (with $\|b\|_2 = 1$). Draw on the 2-D plane $b$, $x$ and show the value of $b^Tx$ on the graph. 
+\end{enumerate}
+
+Now we will focus on Senator Voting data. This data provides information about senator vote $x$ and senator political affiliation $y$. We provide you with four different vectors $(a_1, a_2, a_3, a_4)$ precomputed by the EECS127 staff. Each of these vectors can be used to define a linear function $f_a: x \rightarrow a^Tx$.
+
+\begin{enumerate}
+    \item[3.] Load the files in \textit{senator.zip}, and let $X$ be the data matrix (with each row a senator, and each column a bill). Center the data matrix $X$ (which is a standard preprocessing step for data analysis) and then compute for each vector $a$ the score of each senator. We provide you with the skeleton code to load the data and visualize the scores in contrast to the affiliation $y$. You will compute such plots using the existing code and explain them.
+    
+    \item[4.] Which direction among the vectors $a_1, a_2, a_3, a_4$ do you prefer in order to produce a score that effectively summarizes the affiliation? Justify your answer.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 7 (Customer purchase history matrix)}
+
+A store keeps track of its sales of products from $K$ different
+product categories to $N$ customers over some time period, like one month. $K$ might be on the order of 1000 and $N$ might be 100000. The data is stored in an $N \times K$ matrix $C$, with $C_{ij}$ being the total dollar purchases of product $j$ by customer $i$ All the entries of $C$ are non-negative. The matrix $C$ is typically sparse, i.e., many of its entries are zero.
+
+\begin{enumerate}
+    \item What is $C \boldsymbol{1}$? ($\boldsymbol{1}$ is a $K$-vector of 1s)
+    
+    \item What is $C^T \boldsymbol{1}$? ($\boldsymbol{1}$ is a $N$-vector of 1s)
+    
+    \item Give a short matrix-vector expression for the total dollar amount of all purchases, by all customers.
+    
+    \item What does it mean if ($CC^T)_{kl} = 0$? Your answer should be simple English.
+\end{enumerate}
+
+We are now interested in efficient computations. In our setting, note that the data matrix $C$ is large but very sparse. The number of non zero-valued elements divided by the total number of elements is called the density $d$ of the matrix $C$. Let $w$ in $\mathbb{R}^K$ be a given weighting vector. Assume that we center the rows (removing the average row to every row), obtaining a new row-centered matrix $C_m$. 
+
+\begin{enumerate}
+    \item[5.] Provide an explanation on how to efficiently compute the matrix vector product $v = C_m w$.
+    
+    \item[6.] Mathematically estimate the gain speed of your method vs the naive method (of forming $C_m$ first) as a function of $K$, $N$, and $d$.
+    
+    \item[7.] Confirm your findings with an empirical study: we provide you with a matrix $C$ and a vector $w$ in the Jupyter Notebook matrix-vector.ipynb. Using the skeleton code, compare the sparse matrix method against the naive method. Comment on the time improvement and attach your notebook here in pdf format for grading. Let us note that we do not ask the students to create their own sparse matrix functionalities.
+    
+    \item[8.] Assume that we add one row (data point). Explain how to efficiently update the resulting vector $v$ accordingly.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\end{document}
