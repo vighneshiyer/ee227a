@@ -111,6 +111,22 @@ In the following we denote by ${\cal X}$ the feasible set. For the following sta
 \end{enumerate}
 
 \begin{solution}
+\begin{enumerate}
+\item Yes, this is true. Move the non-linear objective function to the constraint list as such:
+\begin{align*}
+    p^* &= \min_{y} y \\
+    \text{subject to } &f_i(\bm{x}) \leq 0, i = 1,\dots,m \\
+    \text{and } &f_0(\bm{x}) \leq y \\
+    \text{for } &\bm{x} \in \mathbb{R}^n
+\end{align*}
+
+\item Yes, this is true. Move the constraints to the original objective function to increase the cost when the constraint isn't met.
+\begin{align*}
+    p_{new}^* = \min_{x \in \mathbb{R}^n} f_0(x) + \sum_{i=1}^m \max(f_i(x),0)
+\end{align*}
+
+\item This may be true, but I don't know of a good way to prove it yet.
+\end{enumerate}
 % Your solution here
 \end{solution}
 
