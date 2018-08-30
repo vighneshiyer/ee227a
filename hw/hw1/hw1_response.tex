@@ -8,21 +8,23 @@
 \usepackage{enumitem}
 \usepackage{mathtools}
 \usepackage{bbm}
+\usepackage{bm}
 \usepackage{graphicx}
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage{amsthm,amssymb}
+\usepackage{minted}
 \setlength\parindent{0pt}
 \newcommand{\solution}{\subsection*{Solution:}}
 
 \begin{document}
 
-\title{EE127 Homework 1}
-\author{Your Name Here}
+\title{EE127/227A Homework 1}
+\author{Vighnesh Iyer}
 \date{\today}
 \maketitle
 
-\subsection*{Exercise 1 (CVX Installation)} 
+\subsection*{Exercise 1 (CVX Installation)}
 
 For Python users:
 Install the package CVXOPT and run the tutorial on Linear Program solvers: \url{http://cvxopt.org/examples/tutorial/lp.html}
@@ -30,13 +32,53 @@ Install the package CVXOPT and run the tutorial on Linear Program solvers: \url{
 For MATLAB users: Install CVX and make sure you can run the least squares code: \url{http://cvxr.com/cvx/doc/quickstart.html}
 
 \begin{solution}
-% Your solution here
+I'm using CVXOPT. From Wikipedia, linear programs can be expressed in canonical form:
+\begin{align}
+    \text{Minimize  } &\bm{c}^T \bm{x} \nonumber \\
+    \text{subject to  } &A\bm{x} \leq \bm{b} \nonumber \\
+    \text{and  } &\bm{x} \geq 0 \nonumber
+\end{align}
+
+In the tutorial, the following problem is given:
+\begin{align}
+    \text{Minimize  } &2 x_1 + x_2 \nonumber \\
+    \text{subject to  } &-x_1 + x_2 \leq 1 \nonumber \\
+    &x_1 + x_2 \geq 2 \nonumber \\
+    &x_2 \geq 0 \nonumber \\
+    &x_1 - 2x_2 \leq 4 \nonumber
+\end{align}
+
+So we can write down the matrices by pattern matching:
+\begin{align}
+    c &= \begin{bmatrix}
+         2 \\ 1
+         \end{bmatrix} \nonumber \\
+    b &= \begin{bmatrix}
+         1 \\ -2 \\ 0 \\ 4
+         \end{bmatrix} \nonumber \\
+    A &= \begin{bmatrix}
+         -1 & 1 \\ -1 & -1 \\ 0 & -1 \\ 1 & -2
+         \end{bmatrix} \nonumber
+\end{align}
+
+Then use cvxopt to solve
+\begin{minted}{python}
+from cvxopt import matrix, solvers
+A = matrix([ [-1.0, -1.0, 0.0, 1.0], [1.0, -1.0, -1.0, -2.0] ])
+b = matrix([ 1.0, -2.0, 0.0, 4.0 ])
+c = matrix([ 2.0, 1.0 ])
+sol=solvers.lp(c,A,b)
+print(sol['x'])
+# [ 5.00e-01]
+# [ 1.50e+00]
+\end{minted}
+
 \end{solution}
 
 \newpage
 \subsection*{Exercise 2 (About general optimization)}
 
-In this exercise, we test your understanding of the general framework of optimization and its language. We consider an optimization problem in standard form: 
+In this exercise, we test your understanding of the general framework of optimization and its language. We consider an optimization problem in standard form:
 \begin{align*}
     p^* = \min_{x \in \mathbb{R}^n} \: f_0(x) ~:~ f_i(x) \le 0, \;\; i=1,\ldots,m.
 \end{align*}
