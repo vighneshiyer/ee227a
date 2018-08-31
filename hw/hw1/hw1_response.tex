@@ -125,9 +125,17 @@ In the following we denote by ${\cal X}$ the feasible set. For the following sta
     p_{new}^* = \min_{x \in \mathbb{R}^n} f_0(x) + \sum_{i=1}^m \max(f_i(x),0)
 \end{align*}
 
-\item This may be true, but I don't know of a good way to prove it yet.
+\item This may be true, but I don't know of a good way to prove it yet. alright, now i don't think this is true because how can you express a constraint like cos(x) \leq 0 into a linear system (even if infinite). ok I again think this is true, but I need to be able to formally put any non-linear constraint in terms of an infinite number of linear constraints.
+
+\item A counter-example exists. An inequality being strict at the optimum means that it is \textbf{not} satisfied at the optimum, but just barely so.
+\begin{align*}
+    x^* &= \min_{x} x^2 : x > 0 \\
+    \text{without strict constraint } x^* &= 0 \\
+    \text{with strict constraint } x^* &= \text{infinitely close to 0, but not 0}
+\end{align*}
+
+\item Yes, this is true. A minimization over 1 variable must consider all possible values of the other variable, so the order of minimization doesn't matter.
 \end{enumerate}
-% Your solution here
 \end{solution}
 
 \newpage
@@ -155,7 +163,42 @@ This operation is mathematically denoted $y = h * x$ and called a convolution. N
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+\item We can write $y_t$ as:
+\begin{align*}
+    y_t &= \begin{cases}
+        0 & t \leq 0 \\
+        \sum_{i=1}^{m} h_i x_{t-i-1} & t > 0 \land t \leq n + m - 1 \\
+        0 & t > n + m - 1
+    \end{cases} \\
+    a &= 0 \\
+    b &= n + m - 1
+\end{align*}
+When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value of $y_t$ can be non-zero until the $x_t$ vector has 'passed' the convolution taps.
+
+\item The matrix is a Toeplitz matrix (each descending diagonal from left to right is constant).
+\begin{align*}
+    \begin{bmatrix}
+        y_1 \\ y_2 \\ \vdots \\ y_{b-a}
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+        h_1 & 0 & \dots & 0 & 0 \\
+        h_2 & h_1 & \dots & 0 & 0 \\
+        \vdots & \vdots & \vdots & h_1 & 0 \\
+        h_{m} & h_{m-1} & \dots & h_2 & h_1 \\
+        0 & h_m & \dots & h_{m-2} & h_{m-1} \\
+        0 & 0 & \dots & h_{m-1} & h_{m-2} \\
+        0 & 0 & 0 & h_{m} & h_{m-1} \\
+        0 & 0 & 0 & 0 & h_m
+    \end{bmatrix}
+    \begin{bmatrix}
+        x_1 \\ x_2 \\ \vdots \\ x_n
+    \end{bmatrix}
+\end{align*}
+
+\item 
+\end{enumerate}
 \end{solution}
 
 \newpage
