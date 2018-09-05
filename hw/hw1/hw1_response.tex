@@ -255,8 +255,22 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
 \end{align*}
 
 \begin{align*}
-
+    \text{Prove: } \|x\|_1 &\leq \sqrt{n} \|x\|_2 \\
+    \text{Let: } x &= \begin{bmatrix} |x_1| & |x_2| & \dots & |x_n| \end{bmatrix}^T \\
+        y &= \begin{bmatrix} 1 & 1 & \dots & 1 \end{bmatrix}^T \\
+    \text{Applying C-S: } |x^T y| &\leq \|x\|_2 \|y\|_2 \\
+    | \sum_{i=1}^n |x_i| | &\leq \|x\|_2 \sqrt{n} \\
+    \|x\|_1 &\leq \sqrt{n} \|x\|_2
 \end{align*}
+
+\begin{align*}
+    \text{Prove: } \sqrt{n} \|x\|_2 &\leq n \|x\|_{\infty} \\
+    \text{We had shown: } \|x\|_2^2 &\leq n \|x\|_{\infty}^2 \\
+    n \|x\|_2^2 &\leq n^2 \|x\|_{\infty}^2 \\
+    \sqrt{n} \|x\|_2 &\leq n \|x\|_{\infty}
+\end{align*}
+
+\item \textbf{TODO TODO TODO}
 \end{enumerate}
 \end{solution}
 
