@@ -302,7 +302,53 @@ headlines from the web edition of the New York Times on Dec.\ 7, 2010:
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+\item
+\begin{align*}
+    a = \begin{bmatrix} 1& 2& 0& 0& 0& 0 \end{bmatrix}^T \\
+    b = \begin{bmatrix} 1& 0& 3& 2& 4& 0 \end{bmatrix}^T \\
+    c = \begin{bmatrix} 0& 0& 0& 2& 0& 2 \end{bmatrix}^T \\
+    d = \begin{bmatrix} 0& 0& 0& 0& 0& 1 \end{bmatrix}^T
+\end{align*}
+
+\item
+\begin{minted}{python}
+pairs = [
+    (a,a),(a,b),(a,c),(a,d),
+    (b,b),(b,c),(b,d),(c,c),(c,d),(d,d)
+]
+pairs_eng = [
+    '(a,a)','(a,b)','(a,c)','(a,d)',
+    '(b,b)', '(b,c)','(b,d)','(c,c)','(c,d)','(d,d)'
+]
+for ((x,y),eng) in zip(pairs,pairs_eng):
+    print(eng + ":")
+    print(np.dot(x.T, y) / (np.linalg.norm(x,2) * np.linalg.norm(y,2)))
+\end{minted}
+
+\begin{minted}{text}
+(a,a):
+0.9999999999999998
+(a,b):
+0.0816496580927726
+(a,c):
+0.0
+(a,d):
+0.0
+(b,b):
+1.0
+(b,c):
+0.2581988897471611
+(b,d):
+0.0
+(c,c):
+0.9999999999999998
+(c,d):
+0.7071067811865475
+(d,d):
+1.0
+\end{minted}
+\end{enumerate}
 \end{solution}
 
 \newpage
