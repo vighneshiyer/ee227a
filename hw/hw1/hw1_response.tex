@@ -425,7 +425,12 @@ We are now interested in efficient computations. In our setting, note that the d
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+    \item $C \mathbf{1}$ returns a vector representing the total purchase amount (in dollars) per customer.
+    \item $C^T \mathbf{1}$ returns a vector representing the total purchased amount (in dollars) per product.
+    \item $(C \mathbf{1}_K)^T \mathbf{1}_N$ where $\mathbf{1}_x$ is a length $x$ vector of 1s.
+    \item If $(C C^T)_{k,l} = 0$ it means customer $k$ and customer $l$ didn't purchase any products in common.
+\end{enumerate}
 \end{solution}
 
 \end{document}
