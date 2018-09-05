@@ -232,6 +232,7 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
     &= \sum_{i=1}^n x_i^2 - y_i^2 = \sum_{i=1}^n x_i^2 - \sum_{i=1}^n y_i^2 \\
     &= ||x||_2^2 - ||y||_2^2 = 1 - 1 = 0
 \end{align*}
+        \textbf{TODO TODO TODO 2D DRAWING}
 
 \item Prove the inequalities from left to right
 \begin{align*}
@@ -369,7 +370,30 @@ Now we will focus on Senator Voting data. This data provides information about s
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+    \item Construct $\mathbf{a}$ as such:
+        \begin{align*}
+            a = \begin{bmatrix} -\frac{1}{n} & -\frac{1}{n} & \dots & -\frac{1}{n} + 1 & \dots & -\frac{1}{n} & -\frac{1}{n} \end{bmatrix}^T
+        \end{align*}
+    \item \textbf{TODO TODO TODO Include drawing which is written in notes}
+    \item To subtract the mean from the data matrix $X$:
+    \begin{minted}{python}
+    X_bar = np.zeros(X.shape)
+    col_means = X.mean(axis=0)
+    for col in range(X.shape[1]):
+        for row in range(X.shape[0]):
+            X_bar[row,col] = X[row,col] - col_means[col]
+    print(X_bar)
+    \end{minted}
+    To compute the senator scores:
+    \begin{minted}{python}
+    senator_scores = np.dot(a_vectors, X_bar)
+    \end{minted}
+    \begin{figure}[H]
+        \centerline{\includegraphics[width=0.6\textwidth]{figs/exercise_6.png}}
+    \end{figure}
+    \item Direction $a_4$ clearly works the best to separate senators based on affilation. Look at the large score difference between red and blue senators for vector $a_4$ but the large overlap with the other vectors.
+\end{enumerate}
 \end{solution}
 
 \newpage
