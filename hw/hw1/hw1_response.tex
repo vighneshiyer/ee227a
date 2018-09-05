@@ -85,29 +85,29 @@ In this exercise, we test your understanding of the general framework of optimiz
 In the following we denote by ${\cal X}$ the feasible set. For the following statements, provide a proof or counter-example.
 
 \begin{enumerate}
-	\item Any optimization problem can be expressed as one with a linear objective.
-	
-	\item Any optimization problem can be expressed as one without any constraints.
-	
-	\item Any optimization problem can be recast as a linear program, provided one allows for an infinite number of constraints.
-	
-	\item If one inequality is strict at the optimum, then we can remove it from the original problem and obtain the same solution.
-	
-	\item If the problem involves the minimization over more than one variable, say $y$ and $x$, then we can exchange the minimization order without altering the optimal value:
+    \item Any optimization problem can be expressed as one with a linear objective.
+
+    \item Any optimization problem can be expressed as one without any constraints.
+
+    \item Any optimization problem can be recast as a linear program, provided one allows for an infinite number of constraints.
+
+    \item If one inequality is strict at the optimum, then we can remove it from the original problem and obtain the same solution.
+
+    \item If the problem involves the minimization over more than one variable, say $y$ and $x$, then we can exchange the minimization order without altering the optimal value:
     \begin{align*}
-    	\min_x\min_y \: F_0(x,y) = \min_y\min_x \: F_0(x,y)
-	\end{align*}
-	
-	\item If the problem involves the minimization of an objective function of the form
+    \min_x\min_y \: F_0(x,y) = \min_y\min_x \: F_0(x,y)
+    \end{align*}
+
+    \item If the problem involves the minimization of an objective function of the form
     \begin{align*}
-    	f_0(x) = \max_y \: F_0(x,y),
-	\end{align*}
+    f_0(x) = \max_y \: F_0(x,y),
+    \end{align*}
     then $p^* \ge d^*$, where
     \begin{align*}
-        p^* &:= \min_{x} \max_y F_0(x, y) \\
-    	d^* &:= \max_y \: \min_{x} \: F_0(x,y).
-	\end{align*}
-	{\em Hint:} consider the function $y \rightarrow \min_{x'} \: F_0(x',y)$ and a similar function of $x$.
+    p^* &:= \min_{x} \max_y F_0(x, y) \\
+    d^* &:= \max_y \: \min_{x} \: F_0(x,y).
+    \end{align*}
+    {\em Hint:} consider the function $y \rightarrow \min_{x'} \: F_0(x',y)$ and a similar function of $x$.
 \end{enumerate}
 
 \begin{solution}
@@ -197,7 +197,7 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
     \end{bmatrix}
 \end{align*}
 
-\item 
+\item The product of $p(s)$ and $q(s)$ can be given in the form $p^T T q s$, where $\mathbf{T}$ is the constructed Toeplitz matrix, $\mathbf{p}$ and $\mathbf{q}$ are the vectors composed of the polynomial coefficients, and $\mathbf{s}$ is a vector of powers of $s$.
 \end{enumerate}
 \end{solution}
 
@@ -206,14 +206,14 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
 
 \begin{enumerate}
     \item Let $x,y\in\mathbb{R}^{n}$ be two unit-norm vectors, that is, such that $\|x\|_2 = \|y\|_2=1$. Show that the vectors $x-y$ and $x+y$ are orthogonal. Draw on the 2D plane the two vectors and all the necessary shapes to graphically solve the exercise. You may use right angles, circles and straight lines to make your point.
-    
+
     \item
     Show that the following inequalities hold for any vector $x \in \mathbb{R}^{n}$:
     \begin{align*}
         \frac{1}{\sqrt{n}}\|x\|_2 \leq \|x\|_\infty \leq  \|x\|_2 \leq \|x\|_1 \leq \sqrt{n} \|x\|_2 \le n\|x\|_\infty.
     \end{align*}
-    \textit{Hint:} think about using Cauchy-Schwarz's inequality, and instantiate it on the corresponding norms. 
-    
+    \textit{Hint:} think about using Cauchy-Schwarz's inequality, and instantiate it on the corresponding norms.
+
     \item Show that for any non-zero vector $x$,
     \begin{align*}
         \text{card}(x) \ge \frac{\|x\|_1^2}{\|x\|_2^2},
@@ -222,14 +222,49 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+\item
+\begin{align*}
+    x - y \text{ orthogonal to } x + y &\rightarrow (x-y) \cdot (x+y) = 0 \\
+    (x-y)_i &= x_i - y_i \\
+    (x+y)_i &= x_i + y_i \\
+    (x-y) \cdot (x+y) &= \sum_{i=1}^n (x-y)_i (x+y)_i = \sum_{i=1}^n (x_i-y_i)(x_i+y_i) \\
+    &= \sum_{i=1}^n x_i^2 - y_i^2 = \sum_{i=1}^n x_i^2 - \sum_{i=1}^n y_i^2 \\
+    &= ||x||_2^2 - ||y||_2^2 = 1 - 1 = 0
+\end{align*}
+
+\item Prove the inequalities from left to right
+\begin{align*}
+    \text{Prove: } \frac{1}{\sqrt{n}} ||x||_2 \leq ||x||_{\infty} \\
+    ||x||_2^2 = \sum_{i=1}^n x_i^2 &\leq n \cdot \max_{i=1,\dots,n} x_i^2 n \cdot \max_{i=1,\dots,n} |x_i|^2 = n ||x||_{\infty}^2 \\
+    \rightarrow ||x||_2^2 &\leq n ||x||_{\infty}^2 \\
+    \rightarrow \frac{1}{\sqrt{n}} ||x||_2 \leq ||x||_{\infty}
+\end{align*}
+
+\begin{align*}
+    \text{Prove: } \|x\|_{\infty} &\leq \|x\|_2 \\
+    \|x\|_{\infty} &= \max_{i=i,\dots,n} |x_i| = \max_{i=1,\dots,n} \sqrt{|x_i|^2} \leq \sqrt{\sum_{i=1}^n |x_i|^2} = \|x\|_2 \\
+    \rightarrow \|x\|_{\infty} &\leq \|x\|_x
+\end{align*}
+
+\begin{align*}
+    \text{Prove: } \|x\|_2 &\leq \|x\|_1 \\
+    \text{In general } \sqrt{a_1 + a_2 + \dots + a_n} &\leq \sqrt{a_1} + \sqrt{a_2} + \dots + \sqrt{a_n} \\
+    \|x\|_2 = &\sqrt{\sum_{i=1}^n |x_i|^2} \leq \sum_{i=1}^n \sqrt{|x_i|^2} = \|x\|_1 \\
+    \rightarrow \|x\|_2 &\leq \|x\|_1
+\end{align*}
+
+\begin{align*}
+
+\end{align*}
+\end{enumerate}
 \end{solution}
 
 \newpage
 \subsection*{Exercise 5 (Comparing text)}
 
-In this exercise, we  use the word-fre\-quen\-cy vector representation of text 
- for comparing  text documents. For mathematical modeling of transforming text into vectors, refers to Lecture 2, Slide 6 (Example 1: bag of words). 
+In this exercise, we  use the word-fre\-quen\-cy vector representation of text
+ for comparing  text documents. For mathematical modeling of transforming text into vectors, refers to Lecture 2, Slide 6 (Example 1: bag of words).
 In this context, similarity between two documents may be measured by means of the angle $\theta$ between the two frequency vectors
 representing the documents, the documents being maximally ``different'' when the corresponding frequency vectors are orthogonal.
 Consider the following
@@ -237,19 +272,19 @@ headlines from the web edition of the New York Times on Dec.\ 7, 2010:
 
 \begin{enumerate}[label=(\alph*)]
     \item Suit Over Targeted Killing in Terror Case Is Dismissed. A federal judge on Tuesday dismissed a lawsuit that sought to block the United States from attempting to kill an American citizen, Anwar Al-Awlaki, who has been accused of aiding Al Qaeda.
-    
+
     \item In Tax Deal With G.O.P., a Portent for the Next 2 Years. President Obama made clear that he was willing to alienate his liberal base in the interest of compromise. Tax Deal Suggests New Path for Obama. President Obama agreed to a tentative deal to extend the Bush tax cuts, part of a package to keep jobless aid and cut payroll taxes.
-    
+
     \item Obama Urges China to Check North Koreans. In a frank discussion, President Obama urged China's president to put the North Korean government on a tighter leash after a series of provocations.
-    
+
     \item Top Test Scores From Shanghai Stun Educators. With China's debut in international standardized testing, Shanghai students have surprised experts by outscoring counterparts in dozens of other countries.
 \end{enumerate}
 
 \begin{enumerate}
     \item
     First simplify the text (remove plurals, convert verb to infinite tense, etc.) and then find the frequency vectors   representing the text against the dictionary $V=\{$aid, kill, deal, president, tax, china$\}$.
-    
-    \item Compare the four pieces of text by computing the cosine distance (i.e the cosine of the angles) between any pairs of texts. 
+
+    \item Compare the four pieces of text by computing the cosine distance (i.e the cosine of the angles) between any pairs of texts.
 \end{enumerate}
 
 \begin{solution}
@@ -261,15 +296,15 @@ headlines from the web edition of the New York Times on Dec.\ 7, 2010:
 
 \begin{enumerate}
     \item Suppose $x$ is an $n$-vector, with $n = 2m - 1$ and $m \geq 1$. We define the middle element value of $x$ as $x_m$. Define $$f(x) = x_m - \frac{1}{n}\sum_{i = 1}^n x_i$$ which is the difference between the middle element value and the average of the coefficients in $x$. Express $f$ in the form $f(x) = a^Tx$, where $a$ is an $n$-vector.
-    
-    \item Now let $b$ and $x$ be vectors of $\mathbb{R}^2$ (with $\|b\|_2 = 1$). Draw on the 2-D plane $b$, $x$ and show the value of $b^Tx$ on the graph. 
+
+    \item Now let $b$ and $x$ be vectors of $\mathbb{R}^2$ (with $\|b\|_2 = 1$). Draw on the 2-D plane $b$, $x$ and show the value of $b^Tx$ on the graph.
 \end{enumerate}
 
 Now we will focus on Senator Voting data. This data provides information about senator vote $x$ and senator political affiliation $y$. We provide you with four different vectors $(a_1, a_2, a_3, a_4)$ precomputed by the EECS127 staff. Each of these vectors can be used to define a linear function $f_a: x \rightarrow a^Tx$.
 
 \begin{enumerate}
     \item[3.] Load the files in \textit{senator.zip}, and let $X$ be the data matrix (with each row a senator, and each column a bill). Center the data matrix $X$ (which is a standard preprocessing step for data analysis) and then compute for each vector $a$ the score of each senator. We provide you with the skeleton code to load the data and visualize the scores in contrast to the affiliation $y$. You will compute such plots using the existing code and explain them.
-    
+
     \item[4.] Which direction among the vectors $a_1, a_2, a_3, a_4$ do you prefer in order to produce a score that effectively summarizes the affiliation? Justify your answer.
 \end{enumerate}
 
@@ -285,23 +320,23 @@ product categories to $N$ customers over some time period, like one month. $K$ m
 
 \begin{enumerate}
     \item What is $C \boldsymbol{1}$? ($\boldsymbol{1}$ is a $K$-vector of 1s)
-    
+
     \item What is $C^T \boldsymbol{1}$? ($\boldsymbol{1}$ is a $N$-vector of 1s)
-    
+
     \item Give a short matrix-vector expression for the total dollar amount of all purchases, by all customers.
-    
+
     \item What does it mean if ($CC^T)_{kl} = 0$? Your answer should be simple English.
 \end{enumerate}
 
-We are now interested in efficient computations. In our setting, note that the data matrix $C$ is large but very sparse. The number of non zero-valued elements divided by the total number of elements is called the density $d$ of the matrix $C$. Let $w$ in $\mathbb{R}^K$ be a given weighting vector. Assume that we center the rows (removing the average row to every row), obtaining a new row-centered matrix $C_m$. 
+We are now interested in efficient computations. In our setting, note that the data matrix $C$ is large but very sparse. The number of non zero-valued elements divided by the total number of elements is called the density $d$ of the matrix $C$. Let $w$ in $\mathbb{R}^K$ be a given weighting vector. Assume that we center the rows (removing the average row to every row), obtaining a new row-centered matrix $C_m$.
 
 \begin{enumerate}
     \item[5.] Provide an explanation on how to efficiently compute the matrix vector product $v = C_m w$.
-    
+
     \item[6.] Mathematically estimate the gain speed of your method vs the naive method (of forming $C_m$ first) as a function of $K$, $N$, and $d$.
-    
+
     \item[7.] Confirm your findings with an empirical study: we provide you with a matrix $C$ and a vector $w$ in the Jupyter Notebook matrix-vector.ipynb. Using the skeleton code, compare the sparse matrix method against the naive method. Comment on the time improvement and attach your notebook here in pdf format for grading. Let us note that we do not ask the students to create their own sparse matrix functionalities.
-    
+
     \item[8.] Assume that we add one row (data point). Explain how to efficiently update the resulting vector $v$ accordingly.
 \end{enumerate}
 
