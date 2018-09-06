@@ -125,7 +125,8 @@ In the following we denote by ${\cal X}$ the feasible set. For the following sta
     p_{new}^* = \min_{x \in \mathbb{R}^n} f_0(x) + \sum_{i=1}^m \max(f_i(x),0)
 \end{align*}
 
-\item This may be true, but I don't know of a good way to prove it yet. alright, now i don't think this is true because how can you express a constraint like cos(x) \leq 0 into a linear system (even if infinite). ok I again think this is true, but I need to be able to formally put any non-linear constraint in terms of an infinite number of linear constraints.
+\item Yes, this is true. First, from subsection 1, we can always transform an optimization problem into one with a linear objective. Then, to express any (potentially non-linear) constraint as a set of infinite linear constraints, form a bijection $\mathbb{R}^n \rightarrow \mathbb{R}$ (e.g. decimal place interleaving in the interval (0, 1)), evaluate the constraint on all points in $\mathbb{R}^n$ and for each point create a row in $A$ and entry in $b$ that indicates whether the constraint is satisfied or not.
+%This may be true, but I don't know of a good way to prove it yet. alright, now i don't think this is true because how can you express a constraint like cos(x) \leq 0 into a linear system (even if infinite). ok I again think this is true, but I need to be able to formally put any non-linear constraint in terms of an infinite number of linear constraints.
 
 \item A counter-example exists. An inequality being strict at the optimum means that it is \textbf{not} satisfied at the optimum, but just barely so.
 \begin{align*}
@@ -134,7 +135,9 @@ In the following we denote by ${\cal X}$ the feasible set. For the following sta
     \text{with strict constraint } x^* &= \text{infinitely close to 0, but not 0}
 \end{align*}
 
-\item Yes, this is true. A minimization over 1 variable must consider all possible values of the other variable, so the order of minimization doesn't matter.
+\item Yes, this is true. A minimization over 1 variable must consider all possible values of the other variable, so the order of minimization cannot matter. If minimization over 1 variable can't be performed without knowledge of the other variable, then the order of minimization cannot matter, and in the case where minimization over 1 variable allows for elimination of that variable the same can be said.
+
+\item \textbf{TODO TODO TODO}
 \end{enumerate}
 \end{solution}
 
@@ -197,7 +200,22 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
     \end{bmatrix}
 \end{align*}
 
-\item The product of $p(s)$ and $q(s)$ can be given in the form $p^T T q s$, where $\mathbf{T}$ is the constructed Toeplitz matrix, $\mathbf{p}$ and $\mathbf{q}$ are the vectors composed of the polynomial coefficients, and $\mathbf{s}$ is a vector of powers of $s$.
+\item The product of $p(s)$ and $q(s)$ can be given in the form $(\mathbf{T} \mathbf{p})^T \mathbf{s}$, where $\mathbf{T}$ is the constructed Toeplitz matrix, $\mathbf{p}$ is a vector composed of polynomial coefficients (i.e. $p_0, p_1, \dots, p_n$) , and $\mathbf{s}$ is a vector of powers of $s$ (i.e. $s^0, s^1, \dots, s^n$).
+
+    \begin{align*}
+    T =
+    \begin{bmatrix}
+        p_0 & 0 & \dots & 0 & 0 \\
+        p_1 & p_0 & \dots & 0 & 0 \\
+        \vdots & \vdots & \vdots & p_1 & 0 \\
+        p_{n} & p_{n-1} & \dots & p_1 & p_0 \\
+        0 & p_n & \dots & p_{n-2} & p_{n-1} \\
+        0 & 0 & \dots & p_{n-1} & p_{n-2} \\
+        0 & 0 & 0 & p_{n} & p_{n-1} \\
+        0 & 0 & 0 & 0 & p_n
+    \end{bmatrix}
+    \end{align*}
+\item 
 \end{enumerate}
 \end{solution}
 
