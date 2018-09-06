@@ -430,6 +430,61 @@ We are now interested in efficient computations. In our setting, note that the d
     \item $C^T \mathbf{1}$ returns a vector representing the total purchased amount (in dollars) per product.
     \item $(C \mathbf{1}_K)^T \mathbf{1}_N$ where $\mathbf{1}_x$ is a length $x$ vector of 1s.
     \item If $(C C^T)_{k,l} = 0$ it means customer $k$ and customer $l$ didn't purchase any products in common.
+    \item Let $\mathbf{m}$ denote the row average vector, which containes $K$ elements. We can express the first row (sum) of $\mathbf{v} = C_m \mathbf{w}$ as such:
+        \begin{align*}
+            \mathbf{v}_0 &= (C_{0,0} - m_0) w_0 + (C_{0,1} - m_1) w_1 + \dots + (C_{0,K-1} - m_{K-1}) w_{K-1} \\
+            \text{Combining terms: } \mathbf{v}_0 &= (C_{0,0}w_0 + \dots + C_{0,K-1}w_{K-1}) - (m_0 w_0 + \dots + m_{K-1} w_{K-1}) \\
+        \end{align*}
+        Note that the first term can be formed with $C_{sparse} \cdot \mathbf{w}$ and the second term can be formed with $\mathbf{m} \cdot \mathbf{w}^T$ and they can be subtracted.
+    \item The naive method would first perform $N \cdot K$ subtractions to form $C_m$, then $K \cdot N$ multiplications and $(K-1) \cdot N$ additions to form $\mathbf{v}$.
+
+        Total naive: $2 N K$ multiplications and $(K-1) N$ additions.
+
+        The optimized method would perform $K$ multiplications and $K-1$ additions to form $\mathbf{m} \cdot \mathbf{w}^T$. Due to sparsity, the operations used to compute $C_{sparse} \cdot \mathbf{w}$ will be scaled from the naive method by density $d$ to get $K \cdot N \cdot d$ multiplications and $(K-1) \cdot N \cdot d$ additions. Finally, to form $\mathbf{v}$, we need $N$ subtractions.
+
+        Total optimized: $K + KNd$ multiplications and $K-1 + (K-1) N d + N$ add/sub operations.
+
+        Rounding $K-1$ to $K$ and estimating that multiplications have about the same throughput as add or subtract ops:
+        \begin{align*}
+            \text{Naive ops } &= 3NK \\
+            \text{Opt ops } &= 2K + 2KNd + N
+        \end{align*}
+
+    \item In this notebook, $N = K = 10000$ and $d = 0.1$, so the $\text{naive ops } = 300000000$, and $\text{opt ops } = 20030000$ for an estimated 15X speedup.
+
+    The naive implementation:
+    \begin{minted}{python}
+        (C - r_avg) @ w
+    \end{minted}
+    \begin{minted}{text}
+        CPU times: user 487 ms, sys: 211 ms, total: 697 ms
+        Wall time: 472 ms
+    \end{minted}
+
+    The optimized implementation:
+    \begin{minted}{python}
+        np.subtract(C_sparse @ w, r_avg @ w)
+    \end{minted}
+    \begin{minted}{text}
+        CPU times: user 27.9 ms, sys: 26.8 ms, total: 54.7 ms
+        Wall time: 53 ms
+    \end{minted}
+
+    Equivalence Check:
+    \begin{minted}{python}
+        gold = (C - r_avg) @ w
+        opt = np.subtract(C_sparse @ w, r_avg @ w)
+        np.allclose(gold, opt) # account for floating-point errors
+    \end{minted}
+    \begin{minted}{text}
+        True
+    \end{minted}
+
+    I actually got a 9X speedup, which is close enough. Probably I need to put more weight on the multiplication ops over the add/sub ops.
+
+    \item Adding a new row will change $\mathbf{m}$, the row average vector. Assuming $C_{sparse} \cdot \mathbf{w}$ is cached, just recompute $\mathbf{m} \cdot \mathbf{w}^T$ and subtract to refresh the existing elements of $\mathbf{v}$.
+
+        Then to add a new element to $\mathbf{v}$, take the new row $\mathbf{r}$ on its own and perform $\mathbf{r} \cdot \mathbf{w}$, then subtract $\mathbf{m} \cdot \mathbf{w}^T$ from it.
 \end{enumerate}
 \end{solution}
 
