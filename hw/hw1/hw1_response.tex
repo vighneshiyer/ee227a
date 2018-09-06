@@ -303,7 +303,18 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
     \sqrt{n} \|x\|_2 &\leq n \|x\|_{\infty}
 \end{align*}
 
-\item \textbf{TODO TODO TODO}
+\item
+    \begin{align*}
+        \|x\|_1 &= \sum_{i=1}^n |x_i| \cdot c_i \\
+        \text{Let } c_i &= \begin{cases}
+            0 & x_i = 0 \\
+            1 & \text{otherwise}
+        \end{cases} \\
+        \text{By C-S } \|x\|_1 &\leq \||x_i|\|_2 \cdot \|c_i\|_2 \\
+        &\leq \sqrt{\sum_{i=1}^n |x_i|^2} \sqrt{\sum_{i=1}^n c_i^2} \\
+        &\leq \|x\|_2 \cdot \sqrt{card(x)} \\
+        \rightarrow \frac{\|x\|_1^2}{\|x\|_2^2} &\leq card(x)
+    \end{align*}
 \end{enumerate}
 \end{solution}
 
