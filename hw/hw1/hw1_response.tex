@@ -418,7 +418,18 @@ Now we will focus on Senator Voting data. This data provides information about s
         \begin{align*}
             a = \begin{bmatrix} -\frac{1}{n} & -\frac{1}{n} & \dots & -\frac{1}{n} + 1 & \dots & -\frac{1}{n} & -\frac{1}{n} \end{bmatrix}^T
         \end{align*}
-    \item \textbf{TODO TODO TODO Include drawing which is written in notes}
+    \item Projection of $x$ onto $b$:
+        \begin{figure}[H]
+            \centerline{\begin{tikzpicture}[scale=1.5]
+          \draw[thin,gray!40] (-2,-2) grid (2,2);
+          \draw[<->] (-2,0)--(2,0) node[right]{$x$};
+          \draw[<->] (0,-2)--(0,2) node[above]{$y$};
+          \draw[line width=1pt,red,-stealth](0,0)--(2,1) node[anchor=south east]{$\boldsymbol{x}$};
+          \draw[line width=2pt,orange,-stealth](0,0)--(2,0) node[anchor=south east]{$\boldsymbol{b^Tx}$};
+          \draw[line width=1pt,blue,-stealth](0,0)--(1,0) node[anchor=north east]{$\boldsymbol{b}$};
+          %\draw[line width=1pt,orange,-stealth](0,0)--(-0.283,0.717) node[anchor=south east]{$\boldsymbol{x-y}$};
+            \end{tikzpicture}}
+        \end{figure}
     \item To subtract the mean from the data matrix $X$:
     \begin{minted}{python}
     X_bar = np.zeros(X.shape)
