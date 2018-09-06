@@ -250,7 +250,21 @@ When $t \leq 0$, all the terms of $y_t$ become 0. After that point, every value 
     &= \sum_{i=1}^n x_i^2 - y_i^2 = \sum_{i=1}^n x_i^2 - \sum_{i=1}^n y_i^2 \\
     &= ||x||_2^2 - ||y||_2^2 = 1 - 1 = 0
 \end{align*}
-        \textbf{TODO TODO TODO 2D DRAWING}
+        \begin{figure}[H]
+            \centerline{\begin{tikzpicture}[scale=2]
+          \draw[thin,gray!40] (-2,-2) grid (2,2);
+          \draw[<->] (-2,0)--(2,0) node[right]{$x$};
+          \draw[<->] (0,-2)--(0,2) node[above]{$y$};
+          \draw[blue] (0,0) circle [radius=1];
+          \draw[red] (0.717, 0.717) circle [radius=1];
+          \draw[line width=1pt,blue,-stealth](0,0)--(0.717,0.717) node[anchor=north]{$\boldsymbol{}$};
+          \draw[line width=1pt,red,-stealth](0.717,0.717)--(1.717,0.717) node[anchor=north east]{$\boldsymbol{}$};
+          \draw[line width=1pt,orange,-stealth](0,0)--(1.717,0.717) node[anchor=south east]{$\boldsymbol{x+y}$};
+          \draw[line width=1pt,orange,-stealth](0,0)--(-0.283,0.717) node[anchor=south east]{$\boldsymbol{x-y}$};
+            \end{tikzpicture}}
+        \end{figure}
+
+        The blue circle represents all possible choices of $x$ and the red circle shows all the points to which $x+y$ can extend if $x$ was picked to be $[0.717, 0.717]$. The diagram shows that if $y$ is moved to hit a different point on the red circle, it amounts to a rotation of $x+y$ and $x-y$, but the angle between them stays at 90 deg.
 
 \item Prove the inequalities from left to right
 \begin{align*}
