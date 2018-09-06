@@ -137,7 +137,12 @@ In the following we denote by ${\cal X}$ the feasible set. For the following sta
 
 \item Yes, this is true. A minimization over 1 variable must consider all possible values of the other variable, so the order of minimization cannot matter. If minimization over 1 variable can't be performed without knowledge of the other variable, then the order of minimization cannot matter, and in the case where minimization over 1 variable allows for elimination of that variable the same can be said.
 
-\item \textbf{TODO TODO TODO}
+\item We want to show:
+    \begin{align*}
+        \min_x \max_y F_0(x, y) &\geq \max_y \min_x F_0(x, y) \\
+        \text{Equivalent to showing: } \max_y F_0(x, y) &\geq \min_x F_0(x, y) , \forall (x, y)
+    \end{align*}
+    Which always holds because an unconstrained maximization of $F_0$ must always be $\geq$ to the unconstrained minimization of $F_0$ and the fact that the order of variables can be arbitrarily switched.
 \end{enumerate}
 \end{solution}
 
