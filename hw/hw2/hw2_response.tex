@@ -1,0 +1,192 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsfonts, amsmath}
+\usepackage{tikz}
+\usepackage[nobreak=false]{mdframed}
+\usepackage{pgf}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsthm,amssymb}
+\usepackage{minted}
+\setlength\parindent{0pt}
+\newcommand{\solution}{\subsection*{Solution:}}
+\DeclareMathOperator*{\argmax}{arg\!max}
+\DeclareMathOperator*{\argmin}{arg\!min}
+
+\begin{document}
+\title{EE127 Homework 2}
+\author{Vighnesh Iyer}
+\date{\today}
+\maketitle
+
+\subsection*{Exercise 1 (PCA and low-rank compression)}
+
+We are given a $n \times m$ matrix $X = [x_1,\ldots,x_m]$, with $x_i \in \mathbb{R}^{n}$, $i=1,\ldots,m$ the data points.  We assume that the data matrix is centered, in the sense that $x_1+\ldots+x_m = 0$. In lecture, it was asserted that there is equivalence between three problems:
+\begin{itemize}
+    \item[($P_1$)] Finding a line going through the origin that maximizes the variance of the points projected on the line.
+    \item[($P_2$)] Finding a line going through the origin that minimizes the sum of squares of the distances from the points to their projections;
+    \item[($P_3$)] Finding a rank-one approximation to the data matrix.
+\end{itemize}
+In this exercise, you are asked to show the equivalence between these three problems.
+\begin{enumerate}
+    \item Consider the problem of projecting a point $x$ on a line ${\cal L} = \{x_0 + v u \::\: v \in \mathbb{R}\}$, with $x_0, \in \mathbb{R}^n$, $u^Tu=1$, given. Show that the projected point $z$ is given by $z = x_0+v^* u$, with $v^* = (x-x_0)^Tu$, and that the minimal squared distance $\|z-x\|_2^2$ is equal to $\|x-x_0\|_2^2 - ((x-x_0)^Tu)^2$.
+    \item Show that problems $P_1,P_2$ are equivalent.
+    \item Show that $P_3$ is equivalent to $P_1$. \emph{Hint: } show that the data matrix is rank-one if and only if the points are all on a line that goes through the origin.
+\end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+    \item From the livebook: "The \emph{projection} of a given point $x$ on the line ${\cal L}$ is a vector $v$ located on the line, that is closest to $x$ in (L2 norm)"
+    \begin{align*}
+        v^* &= \argmin_{v} \|x - x_0 - vu\|_2 \\
+        &= \argmin_{v} \|(x - x_0) - vu\|_2^2 \\
+        \text{Aside: } \|a-b\|_2^2 = \langle a-b,a-b \rangle &= \langle a,b \rangle + \langle a,-b \rangle + \langle -b,a \rangle + \langle -b,-b \rangle \\
+        &= \|a\|_2^2 - 2 \langle a,b \rangle + \|b\|_2^2 = \|a\|_2^2 - 2a^Tb + \|b\|_2^2 \\
+        v^* &= \argmin_v \|x-x_0\|_2^2 - 2(x-x_0)^T vu + \|vu\|_2^2 \\
+        &= \argmin_v v^2 - 2vu^T (x-x_0) + C \text{ where } C \text{ is some constant } \\
+        &= \argmin_v (v - u^T(x-x_0))^2 + C\\
+        \rightarrow v^* &= u^T(x-x_0)
+    \end{align*}
+
+    The projected point $z$ is just going $v^*$ scalar distance on the line $\cal L$.
+    \begin{align*}
+        z = {\cal L} (v^*) = x_0 + v^* u
+    \end{align*}
+
+    We can directly calculate $\|z-x\|_2^2$:
+    \begin{align*}
+        \|z - x\|_2^2 &= \|x_0 + u^T(x-x_0)u -x\|^2_2 \\
+        &= \|u^T(x-x_0)u - (x-x_0)\|_2^2 \\
+        &= \|u^T(x-x_0)u\|_2^2 - 2(u^T(x-x_0)u)^T(x-x_0) + \|x-x_0\|^2 \\
+        &= \|x-x_0\|_2^2 + ((x-x_0)u^T)^2
+    \end{align*}
+\end{enumerate}
+\end{solution}
+
+\newpage
+\subsection*{Exercise 2 (Generalized Eigenvalues and Image Segmentation)}
+
+In this exercise, we will implement an algorithm for image segmentation from a graph-theoretic approach. As a simplified problem, we will focus on separating the foreground of an image from its background. We provide you with a skeleton code in the archive image\_segmentation.zip that imports an image and guide you through the implementation.
+
+An image is described as a matrix $M$ of shape (N, M) whose values represent the gray scale color normalized between zero and one. Even though we restrict now to gray images, please note that the same algorithm could be easily extended to colored images.
+
+An undirected graph is a triplet $(V, E, W)$ where $V$ is the set of nodes, $E$ the set of edges, and $W$ the set of weights for each edge. As a first step, we would like to construct a graph that represents the image. For that purpose, we choose $V$ to be the set of pixels. We say that there is an edge $(i, j)$ between pixel $i$ and pixel $j$, $1 \leq i, j \leq NM$, if they are neighbors in the image (adjacent in the matrix $M$). For each edge $(i, j)$, we will use as weight $w_{ij} = 1 - abs(M_{x_i, y_i} - M_{x_j, y_j})$, where $(x_i, y_i)$ represents the location of pixel $i$ and $(x_j, y_j)$ represents the location of pixel $j$. This is a measure of pixel similarity. Finally, we are interested in the whole affinity matrix $W$ of shape $(NM, NM)$, where each entry has the value zero is there is no edge between the pixels and the value $w_{ij}$ if there is an edge.
+
+\begin{enumerate}
+    \item Complete the code in the notebook \texttt{image-seg.ipynb} that transforms the image \texttt{img-cup-small.png} into the affinity matrix $W$.
+\end{enumerate}
+
+% Let $W$ be the affinity matrix of the graph.
+Let $D$ be the diagonal matrix of shape $(NM, NM)$, where the $i^{th}$ entry equals the sum of weights associated with edges incident on pixel $i$. That is, $D(i) = \sum_{j} W(i, j)$. We wish to solve the generalized eigenvalue problem $(D - W)y = \lambda Dy$ for all eigenvectors and all eigenvalues.
+
+This eigenvalue problem is a known approximation to finding a partition of a graph that minimize the normalized cut in graph theory. Also, if the graph is connected, then the largest eigenvalue of the adjacency matrix as well as the smallest eigenvalue of the Laplacian have multiplicity 1. We can expect that the gap between this and the nearest eigenvalue is related to some kind of connectivity measure of the graph (for more information on the general topic of graph eigenvalues, one can refer to \url{http://web.cs.elte.hu/~lovasz/eigenvals-x.pdf}). The partition that approximate the solution to the normalized cut problem is derived from the generalized eigenvector with the second smallest eigenvalue and can be straightforwardly used in image segmentation.
+
+\begin{enumerate}
+    \item[2.] Explain how to relate this problem to the symmetric eigenvalue problem we saw in class. Furthermore, explain how you would solve this problem provided routine code to compute a SVD.
+\end{enumerate}
+
+\begin{enumerate}
+    \item[3.] Find the generalized eigenvector $y$ for the eigenvector with the second smallest eigenvalue in the case of your given image. You will rely on linear algebra routine libraries like \texttt{numpy.linalg}.
+\end{enumerate}
+
+
+
+The $i$-th entry of y can be viewed as a “soft” indicator of the component membership of the $i$-th pixel (foreground or background).
+
+\begin{enumerate}
+
+\item[4.] Use this indication to transform your image into a binary image (the so-called result of image segmentation). Try separating pixels corresponding to positive / negative values and above the median / below the median values of the entries of $y$ to split the image into two components. Plot the obtained binary image and comment on your results.
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+
+\newpage
+\subsection*{Exercise 3 (PCA and Senate Voting Data)}
+
+We return to the Senate voting data examined in HW1, with $X$ the $m \times n$ data matrix, where each row corresponds to a Senator, and each column to a bill.
+\begin{enumerate}
+    \item Find a $n$-vector $a$ and scalar $b$ such that the variance of the corresponding score function $f(x) = a^Tx+b$ is maximized. (\textbf{Correction:} there is a condition that $a^T a = 1$)
+    \item How does the variance obtained previously compare to the one obtained with $a$ set to the center of the data points, and $b$ set so that the average score is zero? Comment on the phrase ``senators vote according to the party average''.
+    \item What is the total variance explained by the first two principal components? Plot the data projected on the corresponding plane.
+    \item Based on the first principal component, which bill(s) would you say have been the most important? Which Senators are the most "extreme"?
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 4 (Diet Planning)}
+
+We consider a set of $n$ basic foods (such as rice, beans, apples) and a set of $m$ nutrients or components (such as protein, fat, sugar, vitamin C). Food $j$ has a cost given by $c_j$ (say, in dollars per gram), and contains an amount $N_{ij}$ of nutrient $i$ (per gram). (The nutrients are given in some appropriate units, which can depend on the particular nutrient.) A daily diet is represented by an $n$-vector $d$, with $d_i$ the daily intake (in grams) of food i.
+
+\begin{enumerate}
+    \item Express the condition that a diet $d$ contains exactly the total nutrient amounts given by the m-vector $n_{des}$, and has a total cost $B$ (the budget) as a set of linear equations in the variables $d_1, ..., d_n$. (The entries of $d$ must be nonnegative, but we ignore this issue here.)
+
+    \item Now suppose we are given $n + 1$ new constraints that requires how different the daily diet $d$ is from some predetermined set diet $s_i \in \mathbb{R}^n$, for $i = 1, ..., n+1$, using the 2-norm as a measure of difference. That is, we have
+    $$
+    \| d - s_i \|_2 = p_i
+    $$
+    Express these constraints as a set of $n$ constraints \textbf{linear} in $d$ (\textbf{Correction:} and a \textbf{single} additional constraint that is quadratic in $d$.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 5 (A result related to Gaussian distributions)}
+
+Let $\Sigma \in S^n_{++}$ be a symmetric, positive definite matrix. Show that
+$$
+\int_{\mathbb{R}^n} e^{-\frac{1}{2}x^T \Sigma^{-1} x} dx
+= (2 \pi)^{\frac{n}{2}} \sqrt{\text{det} \Sigma}.
+$$
+\textbf{You may assume known that the result holds true when $n = 1$}. The above shows that the function $p : \mathbb{R}^n \rightarrow \mathbb{R}$ with (non-negative) values
+$$
+p(x) = \frac{1}{(2\pi)^{n/2} \cdot \sqrt{\text{det} \Sigma}} e^{-\frac{1}{2} x^T \Sigma^{-1} x}
+$$
+integrates to one over the whole space. In fact, it is the density function of a probability distribution called the multivariate Gaussian (or normal) distribution, with zero mean and covariance matrix $\Sigma$.
+$$
+\int_{x \in \mathbb{R}^n} f(x)
+=
+|\text{det} P| \cdot \int_{z \in \mathbb{R}^n} f(Pz) dz.
+$$
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 6 (Analysis of calendar days)}
+
+Consider a matrix made up of numerical representations of a range ${\cal T}$ of calendar days. For example, the matrix below represents the range ${\cal T}$ starting on November 1, 2013 and ending on November 3, 2013:
+\[
+X = \left(\begin{array}{ccc}
+2013 &         11       &     1       \\
+        2013      &     11        &    2     \\
+        2013      &     11     &       3     \end{array} \right)
+\]
+\begin{enumerate}
+    \item Form a matrix $X$ for the date range ${\cal T}$ starting on November 1, 2003 and ending on October 31, 2013.
+    \item Find an SVD of the matrix, and print out the right singular vectors and corresponding singular values.
+    \item What is the exact rank of $X$?  Numerically, would you say that the rank of the matrix is ``low''? Comment.
+    \item Plot the left singular vectors. Do these vectors exhibit a pattern? How would you interpret that pattern?
+    \item Explain the significance of the right singular vector $v$ corresponding to the smallest singular value. How would you approximate such a vector by hand?
+    \item How would you expect the condition number (ratio from largest to smallest singular value) to behave as the number of calendar days in ${\cal T}$ increases?
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+\end{document}
