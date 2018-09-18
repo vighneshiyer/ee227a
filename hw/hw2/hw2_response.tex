@@ -64,8 +64,24 @@ In this exercise, you are asked to show the equivalence between these three prob
         \|z - x\|_2^2 &= \|x_0 + u^T(x-x_0)u -x\|^2_2 \\
         &= \|u^T(x-x_0)u - (x-x_0)\|_2^2 \\
         &= \|u^T(x-x_0)u\|_2^2 - 2(u^T(x-x_0)u)^T(x-x_0) + \|x-x_0\|^2 \\
-        &= \|x-x_0\|_2^2 + ((x-x_0)u^T)^2
+        &= ((x-x_0)u^T)^2 - 2\|u^T(x-x_0)u\|^2_2 + \|x-x_0\|_2^2 \\
+        &= -((x-x_0)u^T)^2 + \|x-x_0\|_2^2
     \end{align*}
+
+\item For a line ${\cal L} = vu : v \in \mathbb{R}, u^Tu = 1, u \in \mathbb{R}^n$ passing through the origin with $m$ data points $x_1, \dots, x_m$, we can write both $P_1$ and $P_2$'s optimization problems.
+    \begin{align*}
+        P_1&: \argmax_u \sum_{i=1}^m (u^T x_i - u^T \hat{x})^2 \text{ where } \hat{x} = \frac{1}{m} (x_1 + \dots + x_m) \\
+        &= \argmax_u \sum_{i=1}^m (u^T x_i)^2 \text{ due to } \hat{x} \text{ being constant} \\
+        &= \argmax_u \sum_{i=1}^m \langle x_i, u \rangle^2 \\
+        P_2&: \argmin_u \sum_{i=1}^m (x_i - u^T x_i u)^2 \\
+        &= \argmin_u \sum_{i=1}^m dist(x_i, \langle x_i,u \rangle \cdot u)^2
+    \end{align*}
+
+    We can relate the relationship between the norm of $x_i$, the projection of $x_i$ onto line $\cal L$, and the distance between the projected point and the original $x_i$ using the Pythagorean thm:
+    \begin{align*}
+        dist(x_i, \langle x_i,u \rangle \cdot u)^2 + \langle x_i,u \rangle^2 = \|x_i\|_2^2
+    \end{align*}
+    Since the RHS of this expression is constant for each $x_i$, we can see that mimimizing the distance will lead to the same solution as maximizing the variance.
 \end{enumerate}
 \end{solution}
 
