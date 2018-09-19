@@ -81,7 +81,12 @@ In this exercise, you are asked to show the equivalence between these three prob
     \begin{align*}
         dist(x_i, \langle x_i,u \rangle \cdot u)^2 + \langle x_i,u \rangle^2 = \|x_i\|_2^2
     \end{align*}
-    Since the RHS of this expression is constant for each $x_i$, we can see that mimimizing the distance will lead to the same solution as maximizing the variance.
+        Since the RHS of this expression is constant for each $x_i$, we can see that mimimizing the distance will lead to the same solution as maximizing the variance. This also applies to dimensions higher than $\mathbb{R}^2$.
+
+\item \textbf{TODO TODO TODO}
+\begin{align*}
+    P_1&: \argmax_u \sum_{i=1}^m \langle x_i,u \rangle^2
+\end{align*}
 \end{enumerate}
 \end{solution}
 
@@ -92,10 +97,10 @@ In this exercise, we will implement an algorithm for image segmentation from a g
 
 An image is described as a matrix $M$ of shape (N, M) whose values represent the gray scale color normalized between zero and one. Even though we restrict now to gray images, please note that the same algorithm could be easily extended to colored images.
 
-An undirected graph is a triplet $(V, E, W)$ where $V$ is the set of nodes, $E$ the set of edges, and $W$ the set of weights for each edge. As a first step, we would like to construct a graph that represents the image. For that purpose, we choose $V$ to be the set of pixels. We say that there is an edge $(i, j)$ between pixel $i$ and pixel $j$, $1 \leq i, j \leq NM$, if they are neighbors in the image (adjacent in the matrix $M$). For each edge $(i, j)$, we will use as weight $w_{ij} = 1 - abs(M_{x_i, y_i} - M_{x_j, y_j})$, where $(x_i, y_i)$ represents the location of pixel $i$ and $(x_j, y_j)$ represents the location of pixel $j$. This is a measure of pixel similarity. Finally, we are interested in the whole affinity matrix $W$ of shape $(NM, NM)$, where each entry has the value zero is there is no edge between the pixels and the value $w_{ij}$ if there is an edge.
+An undirected graph is a triplet $(V, E, W)$ where $V$ is the set of nodes, $E$ the set of edges, and $W$ the set of weights for each edge. As a first step, we would like to construct a graph that represents the image. For that purpose, we choose $V$ to be the set of pixels. We say that there is an edge $(i, j)$ between pixel $i$ and pixel $j$, $1 \leq i, j \leq NM$, if they are neighbors in the image ($\|X(i) - X(j) \|_2 \leq r$). For each edge $(i, j)$, we will use as weight $w_{ij} = e^{-\frac{|M[x_i][y_i] - M[x_j][y_j]|}{\sigma_i}} * e^{\frac{-\sqrt{(x_i - x_j)^2 + (y_i - y_j)^2}}{\sigma_x}}$, where $(x_i, y_i)$ represents the location of pixel $i$ and $(x_j, y_j)$ represents the location of pixel $j$. This is a measure of pixel similarity. Finally, we are interested in the whole affinity matrix $W$ of shape $(NM, NM)$, where each entry has the value zero is there is no edge between the pixels and the value $w_{ij}$ if there is an edge.
 
 \begin{enumerate}
-    \item Complete the code in the notebook \texttt{image-seg.ipynb} that transforms the image \texttt{img-cup-small.png} into the affinity matrix $W$.
+    \item Complete the code in the notebook \texttt{image-seg.ipynb} that transforms the image \texttt{img-cup-small.png} into the affinity matrix $W$. The tuned parameters $\sigma_x, \sigma_i, r$ are provided in the notebook.
 \end{enumerate}
 
 % Let $W$ be the affinity matrix of the graph.
@@ -111,18 +116,45 @@ This eigenvalue problem is a known approximation to finding a partition of a gra
     \item[3.] Find the generalized eigenvector $y$ for the eigenvector with the second smallest eigenvalue in the case of your given image. You will rely on linear algebra routine libraries like \texttt{numpy.linalg}.
 \end{enumerate}
 
-
-
-The $i$-th entry of y can be viewed as a “soft” indicator of the component membership of the $i$-th pixel (foreground or background).
+The $i$-th entry of y can be viewed as a “soft” indicator of the component membership of the $i$-th pixel.
 
 \begin{enumerate}
 
-\item[4.] Use this indication to transform your image into a binary image (the so-called result of image segmentation). Try separating pixels corresponding to positive / negative values and above the median / below the median values of the entries of $y$ to split the image into two components. Plot the obtained binary image and comment on your results.
-
+\item[4.] Use this indication to transform your image into a binary image (the so-called result of image segmentation). Try separating pixels corresponding to positive / negative values and above the median / below the median values of the entries of $y$ to split the image into two components. Plot the obtained binary image and the second eigenvector's heatmap. How might we improve our image segmentation results to obtain a segmentation that resembles our heatmap, but with sharper segmentations? Hint: consider a recursive approach to graph partitioning.
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+\item I used the following code to compute the affinity matrix $W$ and the diagonal matrix $D$. It is very inefficient.
+    \begin{minted}[tabsize=2,breaklines]{python}
+W = np.zeros((M.shape[0] * M.shape[1], M.shape[0] * M.shape[1]))
+for i in range(M.shape[0]*M.shape[1]):
+    for j in range(M.shape[0]*M.shape[1]):
+        pixel_i = (int(i / M.shape[1]), int(i % M.shape[1]))
+        pixel_j = (int(j / M.shape[1]), int(j % M.shape[1]))
+        if (np.sqrt((pixel_i[0] - pixel_j[0])**2 + (pixel_i[1] - pixel_j[1])**2) <= r):
+            W[i,j] = np.exp(-abs(M[pixel_i[0],pixel_i[1]] - M[pixel_j[0],pixel_j[1]]) / sigma_i) * \
+                np.exp(-np.sqrt((pixel_i[0] - pixel_j[0])**2 + (pixel_i[1] - pixel_j[1])**2) / sigma_x)
+        else:
+            W[i,j] = 0
+D = np.sum(W, axis=1)
+\end{minted}
+
+\item The symmetric eigenvalue problem refers to applying the spectral theorem applied to a symmetric matrix $A$.
+\begin{align*}
+    A = U \Lambda U^T
+\end{align*}
+where $U$ is a matrix constructed using the eigenvectors of $A$ as columns, and $\Lambda$ is a diagonal matrix with $A$'s eigenvalues.
+
+The problem $(D-W)y = \lambda D y$ is similar to the symmetric eigenvalue problem since $D-W$ is a symmetric matrix and we want to obtain the eigenvalues of that matrix to find $y$ and $\lambda$. But we have to account for the RHS having the additional factor of $D$. We can correct this:
+
+\begin{itemize}
+    \item First find the eigenvalues $\lambda_i$ and respective eigenvectors $y_{Ai}$ for $D-W$ using SVD
+    \item Then find the original eigenvectors as $y_i = \text{element-wise divide}(y_{Ai}, diag(D))$
+\end{itemize}
+
+\item
+\end{enumerate}
 \end{solution}
 
 
@@ -138,7 +170,104 @@ We return to the Senate voting data examined in HW1, with $X$ the $m \times n$ d
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+\item We let the 'score function' of each row vector be $f(x) = a^T x + b$, and can find the aggregate variance across all rows.
+    \begin{align*}
+        \text{Aggregate variance of } f(x) &= \sum_{i=1}^m (f(x_i) - \overline{f(x_i)})^2 \\
+        &= \sum_{i=1}^m (a^T x_i + b - (a^T \hat{x} - b))^2 \text{ where } \hat{x} = \frac{1}{m}(x_i + \dots + x_m) \\
+        &= \sum_{i=1}^m (a^T x_i - a^T \hat{x})^2
+    \end{align*}
+    So this reduces to the standard variance maximization problem, whose solution $a$ is the eigenvector with the largest eigenvalue for the covariance matrix of $X$. $b$ can be any scalar as it doesn't affect the variance of the scores.
+\begin{minted}{python}
+C = np.cov(X.T, bias=True)
+w, v = np.linalg.eig(C)
+a = v[:,0]
+[np.var(X @ v[:,i]) for i in range(len(w))]
+[149.74896507620727,
+ 25.422196529024113,
+ 12.243420297952678,
+ 6.490267033734414,
+ 6.063968727871187,
+ 5.563914277806253,
+ 4.798536085393635,
+    ...
+\end{minted}
+
+\item
+\begin{minted}{python}
+a_new = np.mean(X, axis=0)
+a_new = a_new / np.linalg.norm(a_new)
+b_new = np.mean(X @ a_new)
+np.var(X @ a_new - b_new)
+13.414789689563143
+\end{minted}
+So the variance with this combo of $a$ and $b$ is much smaller than the ideal $a$.
+There seems to be a pattern of senators voting (mostly in favor of a bill) as an entire bloc.
+\begin{minted}{python}
+reds = [i for i, x in enumerate(affiliations) if x == 'Red']
+blues = [i for i, x in enumerate(affiliations) if x == 'Blue']
+red_means = np.mean(X[reds,:],axis=0) / np.linalg.norm(X[reds,:],axis=0)
+blue_means = np.mean(X[blues,:],axis=0) / np.linalg.norm(X[blues,:],axis=0)
+
+print(np.mean(X[reds,:] @ red_means))
+print(np.mean(X[blues,:] @ blue_means))
+print(np.mean(X @ a_new))
+\end{minted}
+\begin{minted}{text}
+34.2226555393159
+43.43847470645225
+10.402345889269402
+\end{minted}
+So yes senators tend to vote as a party bloc more than they do as a Senate bloc.
+
+\item
+\begin{minted}{python}
+pca = PCA(n_components = None)
+pca.fit(X)
+plt.plot(range(len(pca.explained_variance_ratio_)), pca.explained_variance_ratio_)
+plt.xlabel('Singular Value Index')
+plt.ylabel('Explained Variance')
+\end{minted}
+\begin{figure}[H]
+    \centerline{\includegraphics[width=0.5\textwidth]{figs/explained_variance.png}}
+\end{figure}
+
+\begin{minted}[breaklines]{python}
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(1,1,1)
+ax.set_xlabel('Principal Component 1')
+ax.set_ylabel('Principal Component 2')
+ax.set_title('2-PCA Projection')
+for senator in range(100):
+    ax.scatter(X[senator,:] @ pca.components_[0,:], X[senator,:] @ pca.components_[1,:], c=affiliations[senator])
+\end{minted}
+\begin{figure}[H]
+    \centerline{\includegraphics[width=0.5\textwidth]{figs/pca_projection.png}}
+\end{figure}
+
+\item
+\begin{minted}{python}
+np.argmax(pca.components_[0,:])
+15
+\end{minted}
+And it looks like some abortion bill, so makes sense as the most useful bill to split votes along party lines.
+
+\begin{minted}{python}
+for senator in range(100):
+    senator_scores[senator] = np.abs(X[senator,:] @ pca.components_[0,:])
+[(senator_df.columns[i+3], affiliations[i]) for i in np.argsort(senator_scores)[::-1]]
+\end{minted}
+The 'most extreme':
+\begin{minted}{text}
+[(' PaulS.Sarbanes(MD)', 'Blue'),
+ (" EdwardM.'Ted'Kennedy(MA)", 'Blue'),
+ (' BarbaraBoxer(CA)', 'Blue'),
+ (' JonKyl(AZ)', 'Red'),
+ (' FrankR.Lautenberg(NJ)', 'Blue'),
+ (' CarlLevin(MI)', 'Blue'),
+ (" JamesM.'Jim'Inhofe(OK)", 'Red'),
+\end{minted}
+\end{enumerate}
 \end{solution}
 
 \newpage
