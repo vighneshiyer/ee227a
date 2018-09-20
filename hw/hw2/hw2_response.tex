@@ -185,7 +185,6 @@ It looks like the partition was between the rim of the cup and its surroundings 
 \end{enumerate}
 \end{solution}
 
-
 \newpage
 \subsection*{Exercise 3 (PCA and Senate Voting Data)}
 
@@ -351,7 +350,21 @@ $$
 $$
 
 \begin{solution}
-\textbf{TODO TODO TODO}
+\begin{align*}
+    \text{For } n = 1&: \int_{\mathbb{R}} \exp(-\frac{1}{2} x \Sigma^{-1} x) dx = \sqrt{2 \pi} \sqrt{\Sigma} \text{ given} \\
+    \text{Using spectral thm } \Sigma &= U^T \Lambda U \rightarrow \Lambda = U \Sigma U^T \\
+    \text{Applying inverse } \Sigma^{-1} &= U \Lambda^{-1} U^{-1} \rightarrow \Lambda^{-1} = U^{-1} \Sigma^{-1} U \\
+    \text{Note } U^T &= U^{-1} \text{ due to orthogonality} \\
+    \text{Let } y &= U^T x \\
+    \text{Rewrite integral } &\int_{\mathbb{R}^n} \exp(-\frac{1}{2} y^T \Lambda^{-1} y) dy \\
+    &= \int \exp(-\frac{1}{2} \begin{bmatrix} y_0 & \dots & y_n\end{bmatrix} diag(\lambda_0^{-1} \dots \lambda_n^{-1}) \begin{bmatrix} y_0 \\ \vdots \\ y_n \end{bmatrix}) dy \\
+    &= \int \exp(-\frac{1}{2} (y_0^2 \lambda_0^{-1} + \dots + y_n^2 \lambda_n^{-1}) dy \\
+    &= \prod_i^{n} \int \exp(-\frac{1}{2} y_i^2 \lambda_i^{-1}) dy \\
+    &= \prod_i \sqrt{2 \pi} \sqrt{\lambda_i} \\
+    &= (\sqrt{2 \pi})^n \sqrt{\lambda_0 \dots \lambda_n} \\
+    &= (2 \pi)^{\frac{n}{2}} \sqrt{\det \Sigma}
+\end{align*}
+
 \end{solution}
 
 \newpage
