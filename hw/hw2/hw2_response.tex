@@ -83,10 +83,22 @@ In this exercise, you are asked to show the equivalence between these three prob
     \end{align*}
         Since the RHS of this expression is constant for each $x_i$, we can see that mimimizing the distance will lead to the same solution as maximizing the variance. This also applies to dimensions higher than $\mathbb{R}^2$.
 
-\item \textbf{TODO TODO TODO}
+\item
 \begin{align*}
-    P_1&: \argmax_u \sum_{i=1}^m \langle x_i,u \rangle^2
+    P_1&: \argmax_u \sum_{i=1}^m \langle x_i,u \rangle^2 \\
+    P_3&: \min_{A_1 \in \mathbb{R}^{nxm}} \|A - A_1\|_F^2 : rank(A_1) = 1
 \end{align*}
+
+If the points of $A$ all lie on a line ${\cal L} = vu$ then $\rangle x_i,u \langle = \|x_i\|_2$ for all $i$ because each point's projection on $\cal L$ is the point's distance from the origin. This also means $P_2$'s minimization expression will be zero.
+
+We know that the solution to $P_3$ is the SVD decomposition with the largest singular value $A_1 = \sigma_1 u_1 v_1^T$. If $A$ is rank 1, then all other singular values will be zero, and $A_1$ perfectly reconstructs $A$.
+
+If $P_2$ is reformulated as:
+\begin{align*}
+    P_2&: \argmin_{u,v,\sigma} (A - A_1)^2
+\end{align*}
+
+the minimum is zero only if $A_1$ perfectly reconstructs $A$ which implies that $P_3$ is equivalent to $P_2$. $P_2$ is already shown to be equivalent to $P_1$.
 \end{enumerate}
 \end{solution}
 
@@ -153,7 +165,23 @@ The problem $(D-W)y = \lambda D y$ is similar to the symmetric eigenvalue proble
     \item Then find the original eigenvectors as $y_i = \text{element-wise divide}(y_{Ai}, diag(D))$
 \end{itemize}
 
-\item \textbf{TODO TODO TODO}
+\item
+\begin{minted}{python}
+w,v = np.linalg.eig(np.diag(D)-W)
+order = np.argsort(np.abs(w)) # ascending order
+eigv_2 = np.divide(v[:,order[1]], D)
+\end{minted}
+
+\item
+\begin{figure}[H]
+    \centerline{\includegraphics[width=0.5\textwidth]{figs/heatmap_eig2.png}}
+\end{figure}
+
+\begin{figure}[H]
+    \centerline{\includegraphics[width=0.5\textwidth]{figs/binary_eig2.png}}
+\end{figure}
+
+It looks like the partition was between the rim of the cup and its surroundings from the rest of the image for the second smallest eigenvalue. This algorithm can be improved by recursively applying it (construct W, find the most partition that miminizes the cut, 'de-weight' each edge that belongs to the partition selected by the 2nd smallest eigenvalue by taking $v_{-2}^T W$ and subtracting it from $W$, and rerun the partitioning by finding a new SVD).
 \end{enumerate}
 \end{solution}
 
@@ -388,7 +416,7 @@ ax3.plot(u[:,2])
     \centerline{\includegraphics[width=1.2\textwidth]{figs/left_singular_vectors.png}}
 \end{figure}
 
-\item The right singular vector corresponding to the smallest singular value is about $\begin{bmatrix} 0 & -1 & 0 \end{bmatrix}^T$. This corresponds to the 'month' column which has the smallest variance and impact to the norm among all the row entries in $X$. I would estimate $\begin{bmatrix} 0 & -1 & 0\end{bmatrix}^T$ by hand for more than one month worth of entries in $X$.
+\item The right singular vector corresponding to the smallest singular value is about $\begin{bmatrix} 0 & -1 & 0 \end{bmatrix}^T$. This corresponds to the 'month' column which has the smallest inter-row variance and impact to the norm among each row in $X$. I would estimate $\begin{bmatrix} 0 & -1 & 0\end{bmatrix}^T$ by hand for more than one month worth of entries in $X$.
 
 \item Empirically I see that the condition number increases mildly when I increase the number of entries in $X$. But based on analytic thinking, I wouldn't expect the condition number to increase past a certain point because the right singular vectors approach having $-1$ in only one of their entries (rest zero) and the singular values would just scale together with more entries in $X$.
 
