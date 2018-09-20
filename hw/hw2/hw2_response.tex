@@ -326,7 +326,21 @@ We consider a set of $n$ basic foods (such as rice, beans, apples) and a set of 
         \end{align*}
         where $c$ is a vector of $c_j$ cost for each food and $B$ is the budget.
 
-    \item \textbf{TODO TODO TODO}
+    \item Rewrite the set of constraints as:
+    \begin{align*}
+        \|d - s_i\|_2 &= p_i \\
+        \|d - s_i\|_2^2 &= p_i^2 \\
+        \|d\|_2^2 - 2 s_i^T d + \|s_i\|_2^2 &= p_i^2 \\
+        \|d\|_2^2 &= p_i^2 + 2 s_i^T d - \|s_i\|_2^2
+    \end{align*}
+
+    Scale both sides of each constraint $i$ (from $i=2$ by a factor $k_i$ such that $\sum_{i=2}{n+1} k_i = n$. Set $k_1$ to $n$
+
+    \begin{align*}
+        k_i \|d\|_2^2 &= k_i(p_i^2 + 2s_i^T d - \|s_i\|_2^2 \\
+        \text{Subtracting all constraints } i \geq 2 \text{ from constraint } i: 0 &= p_1^2 + 2 s_i^T d - \|s_1\|_2^2 - \sum_{i=2}^{n+1} k_i(p_i^2 + 2s_i^T d - \|s_i\|_2^2)
+    \end{align*}
+    This set of $n$ equations is linear in $d$. We can use any of the original constraints as a quadratic constraint in $d$ to complete the set of constraints.
 \end{enumerate}
 \end{solution}
 
