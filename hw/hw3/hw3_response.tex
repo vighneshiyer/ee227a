@@ -1,0 +1,275 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsfonts, amsmath}
+\usepackage{tikz}
+\usepackage[nobreak=false]{mdframed}
+\usepackage{pgf}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsthm,amssymb}
+\setlength\parindent{0pt}
+\newcommand{\solution}{\subsection*{Solution:}}
+\DeclareMathOperator*{\argmax}{arg\!max}
+\DeclareMathOperator*{\argmin}{arg\!min}
+\DeclareMathOperator*{\trace}{trace}
+
+\begin{document}
+
+\title{EE127 Homework 3}
+\author{Vighnesh Iyer}
+\date{\today}
+\maketitle
+
+\subsection*{Exercise 1 (Kantorovich Problem)}
+
+How to move mass $\mu$ to $\nu$ with minimal cost?
+
+\begin{figure}[ht]
+\centering
+% \includegraphics[width=.45\linewidth]{images/mu_histogram.png}
+% \includegraphics[width=.45\linewidth]{images/nu_histogram.png}
+\caption{Visualization of $\mu$ histogram on left and $\nu$ histogram on right.}
+\label{fig:histogram}
+\end{figure}
+
+More rigorously, let $n \in \mathbb{N}$. We define two discrete probability distributions $\mu = (\mu_1, \cdots, \mu_n)$ and $\nu = (\nu_1, \cdots, \nu_n)$ with $\sum_i \mu_i = \sum_i \nu_i = 1$. We define $C = (c_{ij})_{\substack{{1\cdots n} \\ {1\cdots n}}} \in \mathbb{R}_+^{n^2}$ be the cost matrix for transporting one unit of mass from location $i \in [1, \cdots, n]$ to location $j \in [1, \cdots, n]$. The flow matrix $P = (p_{ij})_{\substack{{1 \cdots n} \\ {1 \cdots n}}}$ denotes the quantity of mass to be moved from location $i$ to location $j$. $P$ satisfies the limit conditions:
+
+\[
+P \mathbbm{1}_n = \mu
+\]
+\[
+P^T \mathbbm{1}_n = \nu
+\]
+
+\begin{enumerate}
+
+\item What is the total cost of transporting the mass $\mu$ into $\nu$ by following the transportation plan $P$?
+
+\item Write the optimization problem of finding the transportation plan $P$ with minimal cost. What type of optimization problem is it? (LP, QP, $\cdots$?).
+
+\end{enumerate}
+
+The optimal value of the optimization problem you found is a well-defined distance named \emph{Kantorovich} or Wasserstein distance noted $\mathcal{W}(\mu, \nu)$. That distance can be readily applied in the context of document similarity. In particular, while computating the Kantorovich between two documents, we obtain a flow matrix. The point of this question is to show how this matrix can be interpreted. For that, we provide you with a certain prior distance on words (word embeddings) that can be used to compute the transportation cost in the notebook \verb+text-kantorovich.ipynb+. 
+
+\begin{enumerate}
+\item[3.] Calculate the Wasserstein distance in the notebook using CVX and use visualize the resulting flow matrix $P$ using the provided code. Interpret the results.
+
+\item[4.] Compute the cosine distance between the two given documents. Comment on which distance is more insightful on this precise example and why.\\
+
+\textit{Note: Cosine distance between two documents (or sets of words) is computed as follows. Collect ordered sets of all word counts from both documents. Then compute the cosine of the angle between the two vectors. For example from ``black blue black'' and ``blue blue red'', one would obtain the sets $\{black: 2, blue: 1, red: 0\}$ and $\{black: 0, blue: 2, red: 1\}$. We can then compute the cosine distance between the vectors $[2,1,0]$ and $[0, 2, 1]$.}
+
+
+\end{enumerate}
+
+We are now interested in computing different barycenters between two discrete vectors $\mu$ and $\nu$ shown in Figure \ref{fig:histogram}. Let us note that the convex combination $t \mu + (1-t) \nu$ has the variational formulation $\operatorname{argmin}_x t(\mu - x)^2 + (1-t) (\nu-x)^2$. Inspired from this fact, we define the variational formulation for convex combinations on the Wasserstein space $\operatorname{argmin}_x t \mathcal{W}(x, \mu) + (1-t) \mathcal{W}(x, \nu)$.
+
+\begin{enumerate}
+
+\item[5.] Write this optimization problem as a LP.
+
+\item[6.] Solve the optimization problem using CVX in the notebook \verb+barycenter.ipynb+. Visualize the Waserstein barycenter for $t \in [0, 0.25, 0.5, 0.75, 1.0]$.
+
+\item[7.] Use your results to comment on the differences between Wasserstein convex combination and euclidean convex combination.
+\end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+\item
+    \begin{align*}
+    \sum_{i=1,\dots,n ; j=1,\dots,n} p_{i,j} c_{i,j} = \trace(P \cdot C^T)
+    \end{align*}
+
+\item
+    \begin{align*}
+	\argmin_{\mathbf{P}} &\trace(P \cdot C^T) \\
+	\text{Constained by: }& \\
+	P \mathbbm{1}_n &= \mu \\
+	P^T \mathbbm{1}_n &= \nu
+    \end{align*}
+    This is a LP because the constraints and objective are both linear in the elements of $\mathbf{P}$ which are the variables in this problem. There are $n^2$ variables.
+\end{enumerate}
+\end{solution}
+
+\newpage
+\subsection*{Exercise 2 (Fast CV for Least-Squares)}
+
+In this exercise, we consider a regularized least-squares problem:
+\begin{equation}\label{eq:rls}
+w_\lambda :=\arg\min_w \: \|y-Xw\|_2^2 + \lambda \|w\|_2^2,
+\end{equation}
+with $X \in \mathbb{R}^{n \times p}$ the data matrix (with one data point per row), $y \in \mathbb{R}^n$ is the response vector, and $\lambda>0$ a ``ridge'' regularization parameter. Solving the above problem leads to a prediction model: for a new data point $x \in \mathbb{R}^{p}$, $\hat{y}(x) = w_\lambda^\top x$.
+
+We would like to choose this regularization parameter based on the notion of ``leave-one-out''  (LOO) cross-validation, whereby for a given candidate value of $\lambda>0$, we estimate the resulting prediction error, averaged across all the models given by the above, when leaving out one data point. Precisely, we set, for $i=1,\ldots,n$
+\[
+w^{(i)}_\lambda := \arg\min_w \: \|y_{\backslash i}-X_{\backslash i}w\|_2^2 + \lambda \|w\|_2^2,
+\]
+with $X_{\backslash i}$ (resp.\ $y_{\backslash i}$) is equal to $X$ (resp. $y$), with the $i$-th row (resp.\ element) removed, and evaluate the prediction error on the point we just left out, with $\hat{y}(x_i) = x_i^\top w^{(i)}_\lambda$.
+
+Obviously, we can compute the LOO error by simply solving $n$ problems of the form~(\ref{eq:rls}), with the appropriate data. In this exercise we investigate a faster method, which is based on solving the above full problem \emph{once}, then performing cheap updates to get the LOO error.
+
+\begin{enumerate}
+    \item Show that the solution to the full problem is of the form
+    \[
+    w_\lambda = (X^\top X+\lambda I)^{-1}X^\top y
+    \]
+    \item Prove a (simple) version of the Sherman-Morrison-Woodbury identity. Given $M=A+uv^\top$ (with $A$ symmetric/invertible, $A+uv^\top$ also invertible) show that
+    \begin{align}
+        M^{-1} = A^{-1}-\frac{1}{1+v^\top A^{-1} u} (A^{-1} u)(A^{-1} v)^\top
+    \end{align}
+    Namely, it is sufficient to just show that $MM^{-1}=I$ (since showing $M^{-1}M=I$ is similar).
+    \item Argue both $X_{\backslash i}^\top X_{\backslash i}$ and $X_{\backslash i}^\top y_{\backslash i}$ can be written as rank-one modifications of $X^\top X$ and $X^\top y$ and show that,
+    \[
+    w^{(i)}_\lambda = w - \frac{\Sigma^{-1} x_i e_i}{1-h_i}
+    \]
+    where we define $\Sigma = X^\top X+\lambda I$, $h_i = x_i^\top \Sigma^{-1} x_i$, and $e_i = y_i - x_i^\top w_{\lambda}$ for convenience.
+    {\em Hint: use the Sherman-Morrison-Woodbury identity.}
+
+    \item Compute (and simplify) the LOO prediction error $\frac{1}{n} \sum_{i=1}^{n} (y_i-(w^{(i)}_{\lambda})^\top x_i)^2$ into an expression consisting of $e_i, h_i$.
+
+    \item What is the complexity of the method for computing the LOO prediction error investigated in this problem relative the naive method where we compute all $w_{\lambda}^{(i)}$ without reusing computations? Highlight the leading dependencies in terms of $n, p$ for both methods in big-$O$ notation.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+
+\newpage
+\subsection*{Exercise 3 (Least norm estimation on traffic flow networks)}
+
+In this problem, we want to estimate the traffic given the road network as well as the historical average of flows on each road segment. We call $q_i$ the flow of vehicles on each road segment $i\in I$. At each intersection, the sum of all incoming flows must be equal to the sum of all outgoing flows. We construct the matrix $A \in \mathbb{R}^{J\times I}$ such that the element on the $j$th line and $i$th column is
+\begin{itemize}
+\item $0$ if link $i$ does not arrive or leave intersection $j$;
+\item $1$ if link $i$ arrives at intersection $j$;
+\item $-1$ if link $i$ leaves intersection $j$.
+\end{itemize}
+
+\begin{enumerate}
+\item Write down the linear equation that corresponds to the conservation of vehicles at each intersection $j\in J$.
+
+\item The goal is to estimate the traffic flow on each of the road segment. The flow estimates should satisfy the conservation of vehicles exactly at each intersection. Among the solutions that satisfy this constraint, we are searching for the estimate that is the closest to the historical average, $\overline{q}$, in the $l_2$-norm sense. The vector $\overline{q}$ has size $I$ and the $i$-th element represent the average for the road segment $i$. Pose the optimization problem.
+
+\item Find a closed form solution to this problem. Detail your answer (do not only give a formula but explain where it comes from).
+
+\begin{figure}[!ht]
+\centering
+% \includegraphics[width=.6\linewidth]{images/TrafficFlow.pdf}
+\caption{Example of traffic estimation problem. The intersections are labeled $a$ to $h$. The road segments are labeled 1 to 22. The arrows indicate the direction of traffic.}
+\label{fig:flows}
+\end{figure}
+\item Formulate the problem for the small example of Figure~\ref{fig:flows} and solve it using the historical average given in Table~\ref{tab:lineqs:historical_flows}. What is the flow that you estimate on road segments 1, 3, 6, 15 and 22?
+
+\item Now, assume that besides the historical averages, you are also given some flow measurements on some of the road segments of the network. You assume that these flow measurements are correct and want your estimate of the flow to match these measurements perfectly (besides matching the conservation of vehicles of course). The right column of
+Table~\ref{tab:lineqs:historical_flows}
+lists the road segments for which we have such flow measurements. Do you estimate a different flow on some of the links? Give the difference in flow you estimate for road segments 1,3, 6, 15 and 22. Also check that you estimate gives you the measured flow on the road segments for which you have measured the flow. {\em Hint:} Your solution will comment on the feasibility of solving such a problem.
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 4 (A Portfolio Design Problem)}
+
+The returns on $n = 4$ assets are described by a Gaussian (normal) random vector $r \in \mathbb{R}^n$ , having the following expected value $\hat{r}$ and covariance matrix $\Sigma$:
+\[
+\hat{r} =
+\begin{bmatrix}
+    0.12  \\
+    0.10  \\
+    0.07 \\
+    0.03
+
+\end{bmatrix}, \; \Sigma =
+\begin{bmatrix}
+    0.0064 & 0.0008 & -0.0011  & 0 \\
+    0.0008 & 0.0025 & 0  & 0 \\
+    -0.0011 & 0 & 0.0004  & 0 \\
+    0 & 0 & 0  & 0
+
+\end{bmatrix}
+.
+\]
+
+
+The last (fourth) asset corresponds to a risk-free investment. An investor
+wants to design a portfolio mix with weights $x \in \mathbb{R}^n$ (each weight $x_i$
+is non-negative, and the sum of the weights is one) so as to obtain the best possible expected return $\hat{r}^Tx$, while guaranteeing that: \\
+
+(i) No single asset weights more than $40\%$ \\ 
+(ii) The risk-free assets should not weight more than $20\%$ \\ 
+(iii) No asset should weight less than $5\%$ \\ 
+(iv) The probability of experiencing a return lower than $q = -3\%$ should be no larger than $\epsilon = 10^{-4}$ 
+\begin{enumerate}
+\item 
+What is the maximal achievable expected return, under the above constraints? \\
+
+\textbf{Hint}: Constraint (iv) is known as a "chance constraint." 
+\[
+a^Tx \sim N(\hat{a}, \Sigma) \implies a^Tx - b \sim N(\hat{a}x - b, x^Tx\Sigma x).
+\]
+We then have:
+\[\Pr(a^Tx \leq b) \geq \eta \iff b - \hat{a}^Tx \geq \Phi^{-1}(\eta)||\Sigma^{1/2}x||_2
+\]
+
+\item Solve the problem for a large number of values of $\epsilon$ between $10^{-4}$ and $10^{-1}$, and plot the optimal values of $\hat{r}^Tx$ versus $\epsilon$. Also make an area plot of the optimal portfolios $x$ versus $\epsilon$. 
+
+\item \textit{Monte Carlo simulation.} Let $x$ be the optimal portfolio found in part 1, with $\epsilon=10^{-4}$. This portfolio maximizes the expected return, subject to the probability of a loss being no more than 3 $\%$. Generate 1000 samples of $r$, and plot a histogram of the returns. Find the empirical mean of the return samples, and calculate the percentage of samples for which a loss occurs.
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+\newpage
+\subsection*{Exercise 5 (A slalom problem)}
+
+A two-dimensional skier must slalom down a slope, by going through $n$ parallel gates of known position $(x_i,y_i)$, and of width $c_i$, $i=1,\ldots,n$. The initial position $(x_0,y_0)$ is given, as well as the final one, $(x_{n+1},y_{n+1})$. Here, the $x$-axis represents the direction down the slope, from left to right, see Figure~\ref{fig:slalom_pic.pdf}. \\ 
+
+
+\begin{figure}[h]
+\begin{center}
+% \includegraphics{slalom_pic.pdf} 
+%[width=.45\textwidth,height=.25\textheight,angle=0]
+\end{center}
+\caption{\label{fig:slalom_pic.pdf}  Slalom problem with $n=5$ obstacles. ``Uphill'' (resp.\ ``downhill'') is on the left (resp.\ right) side. The middle path is dashed, initial and final positions are not shown.}
+\end{figure}
+
+\begin{table}[h]
+\begin{center}
+\[
+\begin{array}{c|ccc}
+i & x_i & y_i & c_i \\\hline
+0 & 0 & 4 & N/A \\
+1 & 4 & 5 & 3 \\
+2 & 8 & 4 & 2 \\
+3 & 12 & 6 & 2 \\
+4 & 16 & 5 & 1 \\
+5 & 20 & 7 & 2 \\
+6 & 24 & 4 & N/A
+\end{array}
+\]
+\end{center}
+\caption{Problem data for Exercise~\ref{exer:lpqp-slalom}.}
+\label{tab:qplp-data-slalom}
+\end{table}
+\begin{enumerate}
+\item Find the path that minimizes the total length of the path. Your answer should come in the form of an optimization problem. 
+
+\item Solve the problem numerically, with the data given in Table~\ref{tab:qplp-data-slalom}.
+\end{enumerate}
+
+
+\begin{solution}
+% Your solution here.
+\end{solution}
+
+
+\end{document}
