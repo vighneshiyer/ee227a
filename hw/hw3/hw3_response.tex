@@ -12,6 +12,7 @@
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage{amsthm,amssymb}
+\usepackage{minted}
 \setlength\parindent{0pt}
 \newcommand{\solution}{\subsection*{Solution:}}
 \DeclareMathOperator*{\argmax}{arg\!max}
@@ -54,7 +55,7 @@ P^T \mathbbm{1}_n = \nu
 
 \end{enumerate}
 
-The optimal value of the optimization problem you found is a well-defined distance named \emph{Kantorovich} or Wasserstein distance noted $\mathcal{W}(\mu, \nu)$. That distance can be readily applied in the context of document similarity. In particular, while computating the Kantorovich between two documents, we obtain a flow matrix. The point of this question is to show how this matrix can be interpreted. For that, we provide you with a certain prior distance on words (word embeddings) that can be used to compute the transportation cost in the notebook \verb+text-kantorovich.ipynb+. 
+The optimal value of the optimization problem you found is a well-defined distance named \emph{Kantorovich} or Wasserstein distance noted $\mathcal{W}(\mu, \nu)$. That distance can be readily applied in the context of document similarity. In particular, while computating the Kantorovich between two documents, we obtain a flow matrix. The point of this question is to show how this matrix can be interpreted. For that, we provide you with a certain prior distance on words (word embeddings) that can be used to compute the transportation cost in the notebook \verb+text-kantorovich.ipynb+.
 
 \begin{enumerate}
 \item[3.] Calculate the Wasserstein distance in the notebook using CVX and use visualize the resulting flow matrix $P$ using the provided code. Interpret the results.
@@ -86,12 +87,62 @@ We are now interested in computing different barycenters between two discrete ve
 
 \item
     \begin{align*}
-	\argmin_{\mathbf{P}} &\trace(P \cdot C^T) \\
-	\text{Constained by: }& \\
-	P \mathbbm{1}_n &= \mu \\
-	P^T \mathbbm{1}_n &= \nu
+        \argmin_{\mathbf{P}} &\trace(P \cdot C^T) \\
+        \text{Constained by: }& \\
+        P \mathbbm{1}_n &= \mu \\
+        P^T \mathbbm{1}_n &= \nu
     \end{align*}
     This is a LP because the constraints and objective are both linear in the elements of $\mathbf{P}$ which are the variables in this problem. There are $n^2$ variables.
+
+\item To construct the cost matrix:
+\begin{minted}[breaklines,tabsize=2]{python}
+C = [[distance(document_1[w_1],document_2[w_2]) for w_2 in range(len(document_2))] for w_1 in range(len(document_1))]
+\end{minted}
+Then I constructed $A$ which was the equality constraint matrix as such:
+\begin{minted}[breaklines,tabsize=2]{python}
+flatten = lambda l: [item for sublist in l for item in sublist]
+A_top_1 = np.array(flatten([[1]*l, [0]*l*(l-1)]))
+A_top = np.array([np.roll(A_top_1, n*l) for n in range(l)])
+A_bot_1_bit = flatten([[1], [0]*(l-1)])
+A_bot = np.array([np.tile(np.roll(A_bot_1_bit, n), l) for n in range(l)])
+A = np.vstack((A_top, A_bot))
+print(A)
+\end{minted}
+\begin{minted}{text}
+[[1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0]
+ [0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0]
+ [0 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0]
+ [0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1]
+ [1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0]
+ [0 1 0 0 0 1 0 0 0 1 0 0 0 1 0 0]
+ [0 0 1 0 0 0 1 0 0 0 1 0 0 0 1 0]
+ [0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 1]]
+\end{minted}
+Then construct $b$ which was the equality constraint vector:
+\begin{minted}{python}
+b = np.hstack((mu,nu))
+print(b)
+[0.25 0.25 0.25 0.25 0.25 0.25 0.25 0.25]
+\end{minted}
+Now solve:
+\begin{minted}{python}
+x = opt.linprog(c, A_eq=A, b_eq=b)
+P = np.reshape(x.x, (l,l))
+emd = x.fun
+print("EMD: " + str(emd))
+print(x.x)
+EMD: 2.8658661246299744
+x: array([0., 0., 0.25, 0., 0., 0., 0., 0.25, 0., 0.25, 0., 0., 0.25, 0., 0., 0.])
+\end{minted}
+\begin{figure}[H]
+    \centerline{\includegraphics[width=0.4\textwidth]{kantorovich_plan.png}}
+\end{figure}
+
+\item The cosine distance is just 0 (due to orthogonal word frequency vectors) because the two documents share no words in common.
+
+The Kantorovich distance is more insightful in this example because it relates the 'logical' (from the cost matrix) difference between two words rather than the literal (character by character) difference.
+
+\item 
 \end{enumerate}
 \end{solution}
 
@@ -202,15 +253,15 @@ The last (fourth) asset corresponds to a risk-free investment. An investor
 wants to design a portfolio mix with weights $x \in \mathbb{R}^n$ (each weight $x_i$
 is non-negative, and the sum of the weights is one) so as to obtain the best possible expected return $\hat{r}^Tx$, while guaranteeing that: \\
 
-(i) No single asset weights more than $40\%$ \\ 
-(ii) The risk-free assets should not weight more than $20\%$ \\ 
-(iii) No asset should weight less than $5\%$ \\ 
-(iv) The probability of experiencing a return lower than $q = -3\%$ should be no larger than $\epsilon = 10^{-4}$ 
+(i) No single asset weights more than $40\%$ \\
+(ii) The risk-free assets should not weight more than $20\%$ \\
+(iii) No asset should weight less than $5\%$ \\
+(iv) The probability of experiencing a return lower than $q = -3\%$ should be no larger than $\epsilon = 10^{-4}$
 \begin{enumerate}
-\item 
+\item
 What is the maximal achievable expected return, under the above constraints? \\
 
-\textbf{Hint}: Constraint (iv) is known as a "chance constraint." 
+\textbf{Hint}: Constraint (iv) is known as a "chance constraint."
 \[
 a^Tx \sim N(\hat{a}, \Sigma) \implies a^Tx - b \sim N(\hat{a}x - b, x^Tx\Sigma x).
 \]
@@ -218,7 +269,7 @@ We then have:
 \[\Pr(a^Tx \leq b) \geq \eta \iff b - \hat{a}^Tx \geq \Phi^{-1}(\eta)||\Sigma^{1/2}x||_2
 \]
 
-\item Solve the problem for a large number of values of $\epsilon$ between $10^{-4}$ and $10^{-1}$, and plot the optimal values of $\hat{r}^Tx$ versus $\epsilon$. Also make an area plot of the optimal portfolios $x$ versus $\epsilon$. 
+\item Solve the problem for a large number of values of $\epsilon$ between $10^{-4}$ and $10^{-1}$, and plot the optimal values of $\hat{r}^Tx$ versus $\epsilon$. Also make an area plot of the optimal portfolios $x$ versus $\epsilon$.
 
 \item \textit{Monte Carlo simulation.} Let $x$ be the optimal portfolio found in part 1, with $\epsilon=10^{-4}$. This portfolio maximizes the expected return, subject to the probability of a loss being no more than 3 $\%$. Generate 1000 samples of $r$, and plot a histogram of the returns. Find the empirical mean of the return samples, and calculate the percentage of samples for which a loss occurs.
 
@@ -231,12 +282,12 @@ We then have:
 \newpage
 \subsection*{Exercise 5 (A slalom problem)}
 
-A two-dimensional skier must slalom down a slope, by going through $n$ parallel gates of known position $(x_i,y_i)$, and of width $c_i$, $i=1,\ldots,n$. The initial position $(x_0,y_0)$ is given, as well as the final one, $(x_{n+1},y_{n+1})$. Here, the $x$-axis represents the direction down the slope, from left to right, see Figure~\ref{fig:slalom_pic.pdf}. \\ 
+A two-dimensional skier must slalom down a slope, by going through $n$ parallel gates of known position $(x_i,y_i)$, and of width $c_i$, $i=1,\ldots,n$. The initial position $(x_0,y_0)$ is given, as well as the final one, $(x_{n+1},y_{n+1})$. Here, the $x$-axis represents the direction down the slope, from left to right, see Figure~\ref{fig:slalom_pic.pdf}. \\
 
 
 \begin{figure}[h]
 \begin{center}
-% \includegraphics{slalom_pic.pdf} 
+% \includegraphics{slalom_pic.pdf}
 %[width=.45\textwidth,height=.25\textheight,angle=0]
 \end{center}
 \caption{\label{fig:slalom_pic.pdf}  Slalom problem with $n=5$ obstacles. ``Uphill'' (resp.\ ``downhill'') is on the left (resp.\ right) side. The middle path is dashed, initial and final positions are not shown.}
@@ -261,7 +312,7 @@ i & x_i & y_i & c_i \\\hline
 \label{tab:qplp-data-slalom}
 \end{table}
 \begin{enumerate}
-\item Find the path that minimizes the total length of the path. Your answer should come in the form of an optimization problem. 
+\item Find the path that minimizes the total length of the path. Your answer should come in the form of an optimization problem.
 
 \item Solve the problem numerically, with the data given in Table~\ref{tab:qplp-data-slalom}.
 \end{enumerate}
