@@ -142,6 +142,21 @@ x: array([0., 0., 0.25, 0., 0., 0., 0., 0.25, 0., 0.25, 0., 0., 0.25, 0., 0., 0.
 
 The Kantorovich distance is more insightful in this example because it relates the 'logical' (from the cost matrix) difference between two words rather than the literal (character by character) difference.
 
+\item We can write the optimization problem as an LP:
+\begin{align*}
+    &\argmin_{x} t \mathcal{W}(x,\mu) + (1-t)\mathcal{W}(x,\nu) \\
+    &\argmin_{x} t \min_{\mathbf{P'}} \trace(P' \cdot C^T) + (1-t) \min_{\mathbf{P''}} \trace(P'' \cdot C^T) \\
+    &\min_{\mathbf{P'},\mathbf{P''}} t \trace(P' \cdot C^T) + (1-t) \trace(P'' \cdot C^T)
+\end{align*}
+This objective function is now linear in $x \in \mathbb{R}^n$ and the elements of the $\mathbf{P'},\mathbf{P''}$ matrices. The constraints:
+\begin{align*}
+    P' \mathbbm{1}_n - x &= 0 \\
+    P'' \mathbbm{1}_n - x &= 0 \\
+    P'^T \mathbbm{1}_n &= \mu \\
+    P''^T \mathbbm{1}_n &= \nu
+\end{align*}
+are also linear in our problem variables.
+
 \item 
 \end{enumerate}
 \end{solution}
