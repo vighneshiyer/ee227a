@@ -18,6 +18,7 @@
 \DeclareMathOperator*{\argmax}{arg\!max}
 \DeclareMathOperator*{\argmin}{arg\!min}
 \DeclareMathOperator*{\trace}{trace}
+\graphicspath{{./figs/}}
 
 \begin{document}
 
@@ -88,7 +89,7 @@ We are now interested in computing different barycenters between two discrete ve
 \item
     \begin{align*}
         \argmin_{\mathbf{P}} &\trace(P \cdot C^T) \\
-        \text{Constained by: }& \\
+        \text{Constrained by: }& \\
         P \mathbbm{1}_n &= \mu \\
         P^T \mathbbm{1}_n &= \nu
     \end{align*}
@@ -135,7 +136,7 @@ EMD: 2.8658661246299744
 x: array([0., 0., 0.25, 0., 0., 0., 0., 0.25, 0., 0.25, 0., 0., 0.25, 0., 0., 0.])
 \end{minted}
 \begin{figure}[H]
-    \centerline{\includegraphics[width=0.4\textwidth]{kantorovich_plan.png}}
+    \centerline{\includegraphics[width=0.4\textwidth]{problem1_kantorovich_plan.png}}
 \end{figure}
 
 \item The cosine distance is just 0 (due to orthogonal word frequency vectors) because the two documents share no words in common.
@@ -148,16 +149,27 @@ The Kantorovich distance is more insightful in this example because it relates t
     &\argmin_{x} t \min_{\mathbf{P'}} \trace(P' \cdot C^T) + (1-t) \min_{\mathbf{P''}} \trace(P'' \cdot C^T) \\
     &\min_{\mathbf{P'},\mathbf{P''}} t \trace(P' \cdot C^T) + (1-t) \trace(P'' \cdot C^T)
 \end{align*}
-This objective function is now linear in $x \in \mathbb{R}^n$ and the elements of the $\mathbf{P'},\mathbf{P''}$ matrices. The constraints:
+This objective function is now linear in the elements of the $\mathbf{P'},\mathbf{P''}$ matrices. The constraints are linear in $x \in \mathbb{R}^n$ and $\mathbf{P'}, \mathbf{P''}$:
 \begin{align*}
     P' \mathbbm{1}_n - x &= 0 \\
     P'' \mathbbm{1}_n - x &= 0 \\
     P'^T \mathbbm{1}_n &= \mu \\
     P''^T \mathbbm{1}_n &= \nu
 \end{align*}
-are also linear in our problem variables.
 
-\item 
+\item I constructed the $A$, $b$, and $c$ matrices "manually". Here are the distributions for $\mu$ and $\nu$.
+
+\begin{figure}[H]
+    \centerline{\includegraphics[width=0.7\textwidth]{problem1_mu_nu.png}}
+\end{figure}
+
+Here is a comparison between the Euclidean and Wasserstein barycenters.
+\begin{figure}[H]
+    \centerline{\includegraphics[width=\textwidth]{problem1_e_barycenter.png}}
+    \centerline{\includegraphics[width=\textwidth]{problem1_w_barycenter.png}}
+\end{figure}
+
+\item The Euclidean barycenter is just an averaging of the two distributions (in the $t = 0.5$ case), but the W barycenter intelligently moves the mass of both distributions by the minimal amount to satisfy the constraints, which gives a much better 'center of gravity' representation. The W barycenter converges to the Euclidean one for $t = 0,1$.
 \end{enumerate}
 \end{solution}
 
