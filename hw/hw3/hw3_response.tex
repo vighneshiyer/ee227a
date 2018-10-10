@@ -347,7 +347,6 @@ On the specific segments:
 print(q_star[0], q_star[2], q_star[5], q_star[14], q_star[21])
 1137.508919320243 1371.2813364131339 3586.2065863718854 1734.6484045537036 1819.3475400098991
 \end{minted}
-\end{enumerate}
 
 \item To find the new $q^*$ with the fixed values, I just added another constraint to the generic optimizer.
 \begin{minted}{python}
@@ -385,6 +384,7 @@ print(res.x[0] - res_m.x[0], res.x[2] - res_m.x[2], res.x[5] - res_m.x[5], res.x
 This problem seems feasible in this case, since these are just new linear constraints on a LS problem and we have enough free variables to account for the flow differences the new constants cause and still maintain the conservation constraint.
 
 This could become an issue when you don't have enough free variables to handle new fixed equality constraints.
+\end{enumerate}
 \end{solution}
 
 \newpage
@@ -438,7 +438,43 @@ We then have:
 \end{enumerate}
 
 \begin{solution}
-% Your solution here.
+\begin{enumerate}
+  \item We can solve this directly using CVXPY:
+    \begin{minted}{python}
+import cvxpy as cp
+from cvxpy.atoms.norm import norm
+from cvxpy.atoms.affine.sum import sum
+
+x = cp.Variable(4)
+objective = cp.Maximize(r_hat @ x)
+constraints = [x >= 0.05,
+               x <= 0.4,
+               x[3] >= 0.2,
+               norm(sigma_sqrt @ x) <= (1/epsilon)*(-0.03 - (r_hat @ x)),
+               sum(x) == 1]
+prob = cp.Problem(objective, constraints)
+
+result = prob.solve()
+print(result)
+print(x.value)
+0.09249999999756837
+[0.4  0.35 0.05 0.2 ]
+    \end{minted}
+    The expected max return is 9.25\%
+
+  \item I swept $\epsilon$ from 10e-5 to 10e-1, since I didn't observe any interesting behavior below $\epsilon$ = 10e-3.
+    \begin{figure}[H]
+      \centerline{\includegraphics[width=0.5\textwidth]{problem4_sweep_epsilon.png}}
+      \centerline{\includegraphics[width=0.5\textwidth]{problem4_area_plot.png}}
+    \end{figure}
+
+  \item Histogram from 1000 samples of $r$.
+    \begin{figure}[H]
+      \centerline{\includegraphics[width=0.5\textwidth]{problem4_monte_carlo.png}}
+    \end{figure}
+
+    The mean return is 0.0921 and 0.013\% of the samples had a loss, which may be slightly higher than expected.
+\end{enumerate}
 \end{solution}
 
 \newpage
