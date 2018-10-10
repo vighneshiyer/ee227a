@@ -519,13 +519,39 @@ i & x_i & y_i & c_i \\\hline
   \begin{enumerate}
     \item Let the pairs $(x_i, y_i')$ for $i = 1, \dots, n$ represent the optimal position of the skier at each gate. The variables we are solving for are only $y_i'$, since we know that the shortest path between the optimal points at each gate is just a linear interpolation for the points between $x_i$ and $x_{i+1}$.
     \begin{align*}
-      \min_{y_i'} &\sum_{i=1}^n \sqrt{(x_{i+1} - x_i)^2 + (y_{i+1}' - y_{i}')^2} \\
+      \min_{y_i'} \sum_{i=1}^n \sqrt{(x_{i+1} - x_i)^2 + (y_{i+1}' - y_{i}')^2} &+ \sqrt{(x_{1} - x_{0})^2 + (y_{1}' - y_{0})^2} + \sqrt{(x_{n+1} - x_{n})^2 + (y_{n+1} - y_{n}')^2}\\
       \text{constrained by } y_i' &\leq y_i + \frac{c_i}{2} \\
       y_i' &\geq y_i - \frac{c_i}{2} \\
       \forall &i \in 1, \dots, n
     \end{align*}
 
-    \item 
+    \item We can simplify the objective function by noting that the $x_i$ terms are constant, and then squaring each term of the sum since it will leave the argmax of the $y_i'$s unchanged. Then the constraints are already linear, so we can write this directly into CVXPY as an unrolled sum.
+
+    \begin{minted}{python}
+x = np.array([0, 4, 8, 12, 16, 20, 24])
+y = np.array([4, 5, 4, 6, 5, 7, 4])
+c = np.array([3, 2, 2, 1, 2])
+y_p = cp.Variable(5)
+objective = cp.Minimize((y_p[1] - y_p[0])**2 +
+                        (y_p[2] - y_p[1])**2 +
+                        (y_p[3] - y_p[2])**2 +
+                        (y_p[4] - y_p[3])**2 +
+                        (y_p[0] - y[0])**2 +
+                        (y_p[4] - y[6])**2)
+
+constraints = [y_p >= y[1:-1] - c/2,
+               y_p <= y[1:-1] + c/2]
+prob = cp.Problem(objective, constraints)
+result = prob.solve(verbose=False)
+print(result)
+print(y_p.value)
+4.812499991956032
+[4.37499449 4.74999612 5.12498808 5.5        6.        ]
+    \end{minted}
+    Here's a visualization of the solution.
+    \begin{figure}[H]
+      \centerline{\includegraphics[width=0.5\textwidth]{problem5_sol.png}}
+    \end{figure}
   \end{enumerate}
 \end{solution}
 
