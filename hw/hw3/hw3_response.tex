@@ -232,6 +232,25 @@ Obviously, we can compute the LOO error by simply solving $n$ problems of the fo
         &= I + u v^T A^{-1} - u v^T A^{-1} \\
         &= I
     \end{align*}
+
+  \item We can write $X^T X = X_{\backslash i}^T X_{\backslash i} + x_i x_i^T$ because $X^T X$ can just be decomposed as a bunch of dyads summed: $X^T X = \sum_{i=1}^p x_i x_i^T$. The same applies when writing $X_{\backslash i}^T y_{\backslash i}$ as a rank-one modification of the original as $X^T y - x_i y_i$. Now solve for $\omega_{\lambda}^{(i)}$ explicitly.
+  \begin{align*}
+    \omega_{\lambda}^{(i)} &= (X_{\backslash i}^T X_{\backslash i} + \lambda I)^{-1} X_{\backslash i}^T y_{\backslash i} \\
+    &= (X^T X - x_i x_i^T + \lambda I)^{-1} (X^T y - x_i y_i) \\
+    &= ((\Sigma^{-1} + \frac{\Sigma^{-1} x_i x_i^T \Sigma^{-1}}{1 - x_i^T \Sigma^{-1} x_i}) (X^T y - x_i y_i) \\
+    &= \omega - \Sigma^{-1} x_i y_i + \frac{\Sigma^{-1} x_i x_i^T \Sigma^{-1}}{1 - x_i^T \Sigma^{-1} x_i} (X^T y - x_i y_i) \\
+    &= \omega - \Sigma^{-1} x_i y_i + \frac{\Sigma^{-1} x_i x_i^T \Sigma^{-1} X^T y - \Sigma^{-1} x_i x_i^T \Sigma^{-1} x_i y_i}{1 - h_i} \\
+    &= \omega - \frac{\Sigma^{-1} x_i (y_i(1 + h_i) - x_i^T \omega - h_i y_i)}{1 - h_i} \\
+    &= \omega - \frac{\Sigma^{-1} x_i e_i}{1 - h_i}
+  \end{align*}
+
+  \item \begin{align*}
+      \frac{1}{n} \sum_{i=1}^n &(y_i - (\omega - \frac{\Sigma^{-1} x_i e_i}{1 - h_i})^T x_i)^2 \\
+      &(y_i - \omega^T + \frac{1}{1 - h_i} e_i^T x_i^T \Sigma^{-1} x_i)^2 \\
+      &(y_i - \omega^T + \frac{1}{1 - h_i} e_i^T h_i)^2
+  \end{align*}
+
+\item The naive version is in $O(n p^3)$ since it is dominated by inverting the matrix $X^T X + \lambda I$ for $n$ data points. The iterative version is in $O(p^3)$ since after the complete solution is found, the rest of the operations are at most in the $O(p^2)$ space.
   \end{enumerate}
 \end{solution}
 
