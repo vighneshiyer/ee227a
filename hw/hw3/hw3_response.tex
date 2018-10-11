@@ -213,9 +213,20 @@ Obviously, we can compute the LOO error by simply solving $n$ problems of the fo
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+  \begin{enumerate}
+    \item \begin{align*}
+      &\|X \omega - y \|_2^2 + \lambda \|\omega\|_2^2 \\
+      =& \|\overline{X} \omega - \overline{y}\|_2^2 \\
+      \text{where } & \overline{X} = \begin{bmatrix} X \\ \sqrt{\lambda} I_p \end{bmatrix} \\
+      \text{and where } & \overline{y} = \begin{bmatrix} y \\ 0_p \end{bmatrix} \\
+    \end{align*}
+    Now this is in the form of standard least squares and we can write the solution explicitly:
+    \begin{align*}
+      \omega^* &= (\begin{bmatrix} X & \sqrt{\lambda} I_p\end{bmatrix} \begin{bmatrix}X \\ \sqrt{\lambda} I_p \end{bmatrix})^{-1} \begin{bmatrix} X & \sqrt{\lambda} I_p \end{bmatrix} \begin{bmatrix} y \\ 0_p \end{bmatrix} \\
+      \omega^* &= (X^T X + \lambda I)^{-1} X^T y
+    \end{align*}
+  \end{enumerate}
 \end{solution}
-
 
 \newpage
 \subsection*{Exercise 3 (Least norm estimation on traffic flow networks)}
