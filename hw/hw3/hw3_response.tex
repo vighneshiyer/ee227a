@@ -225,6 +225,13 @@ Obviously, we can compute the LOO error by simply solving $n$ problems of the fo
       \omega^* &= (\begin{bmatrix} X & \sqrt{\lambda} I_p\end{bmatrix} \begin{bmatrix}X \\ \sqrt{\lambda} I_p \end{bmatrix})^{-1} \begin{bmatrix} X & \sqrt{\lambda} I_p \end{bmatrix} \begin{bmatrix} y \\ 0_p \end{bmatrix} \\
       \omega^* &= (X^T X + \lambda I)^{-1} X^T y
     \end{align*}
+
+    \item \begin{align*}
+        M M^{-1} &= A A^{-1} + u v^T A^{-1} - \frac{AA^{-1}uv^T A^{-1} + u v^T A^{-1} u v^T A^{-1}}{1 + v^T A^{-1} u} \\
+        &= A A^{-1} + u v^T A^{-1} - \frac{u(1 + v^T A^{-1}u)v^T A^{-1}}{1 + v^T A^{-1} u} \\
+        &= I + u v^T A^{-1} - u v^T A^{-1} \\
+        &= I
+    \end{align*}
   \end{enumerate}
 \end{solution}
 
