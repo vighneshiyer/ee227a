@@ -90,7 +90,41 @@ $f_4(x)$  &=& $\|Ax-y\|_2^2 + \|x\|_1^2$
 \end{center}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item \begin{align*}
+        \min_{x} f_1(x) &= \min_{x} \|Ax-y\|_\infty + \|x\|_1 \\
+        &= \min_{x,t} t + \|x\|_1 : \|Ax-y\|_\infty \leq t \\
+        &= \min_{x,t,u} t + \mathbbm{1}_n u : |x_i| \leq u_i \quad \forall i = 1, \dots, n
+    \end{align*}
+    In total:
+    \begin{align*}
+        &\min_{x,t,u} t + \mathbbm{1}_n u \\
+        &(|A x - y|)_i \leq t \quad \forall i = 1, \dots, m \\
+        &|x_i| \leq u_i \quad \forall i = 1, \dots, n
+    \end{align*}
+    The absolute value inequality constraints can be written as two one-sided constraints. This is an LP.
+
+    \item We can expand the squared 2-norm term to get a QP and can express the 1-norm term in the same way as the previous problem.
+    \begin{align*}
+        \min_{x} f_2(x) &= \min_{x,t} x^T A^T A x - 2 x^T A^T y + y^T y + \mathbbm{1}_n t \\
+        &|x_i| \leq t_i \quad \forall i = 1, \dots, n
+    \end{align*}
+
+    \item The objective isn't convex. Take the case where $n = 1, A = 1, y = 0$ then $f_3(x) = x^2 - |x|$. Looking at the graph:
+    \begin{figure}[H]
+        \centerline{\includegraphics[width=0.3\textwidth]{problem2_plot.png}}
+    \end{figure}
+    We can see the epigraph isn't a convex set because a line segment can be drawn from $(-0.1, f_3(-0.1))$ to $(0.1, f_3(0.1))$ which crosses points not in the set.
+
+    \item \begin{align*}
+        \min_x f_4(x) &= \min_x \|Ax - y\|_2^2 + (\sum_{i=1}^n |x_i|)^2 \\
+        \text{by C-S } &\leq \min_x \|Ax - y\|_2^2 + n \sum_{i=1}^n |x_i|^2 \\
+        &= \min_x \|Ax-y\|_2^2 + n (x_1^2 + \dots + x_n^2) \\
+        &= \min_{x} x^T A^T A x - 2 x^T A^T y + y^T y + n (x_1^2 + \dots + x_n^2)
+    \end{align*}
+
+    This is an unconstrained QP. To find the real solution, plug in $\argmin_x$ to the original function.
+\end{enumerate}
 \end{solution}
 
 \newpage
