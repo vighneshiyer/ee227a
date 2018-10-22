@@ -1,0 +1,200 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsfonts, amsmath}
+\usepackage{tikz}
+\usepackage[nobreak=false]{mdframed}
+\usepackage{pgf}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsthm,amssymb}
+\setlength\parindent{0pt}
+\newcommand{\solution}{\subsection*{Solution:}}
+
+\begin{document}
+
+\title{EE127 Homework 4}
+\author{Your Name Here}
+\date{\today}
+\maketitle
+
+\subsection*{Exercise 1 (Quadratic inequalities)} 
+
+Consider the set defined by the following inequalities
+\[
+\left( x_1 \ge x_2 - 1 \mbox{ and } x_2 \ge 0 \right) \mbox{ or } 
+\left( x_1 \le x_2 - 1  \mbox{ and } x_2 \le 0 \right).
+\]
+\begin{enumerate}
+\item
+Draw the set.  Is it convex?  
+\item
+Show that it can be described as a single quadratic inequality of the form $q(x) = x^T Ax + 2b^T x + c \leq 0$, for matrix $A=A^T  \in \mathbb{R}^{2,2}$, $b \in \mathbb{R}^{2}$ and $c \in \mathbb{R}$ which you will determine.
+\item What is the convex hull of this set?
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 2 (Formulating problems as LPs or QPs)}
+
+Formulate the   problem 
+\[
+p_j^* \doteq \min_x \: f_j(x), 
+\]
+for different functions $f_j$, $j=1,\ldots,4$, as QPs or LPs, or, if you cannot, explain why. 
+In our formulations, we always use $x \in \mathbb{R}^{n}$ as the variable, and assume that $A \in \mathbb{R}^{m,n}$, $y \in \mathbb{R}^{m}$. If you obtain an LP or QP formulation, make sure to put the problem in standard form, stating precisely what the variables, objective, and constraints are. 
+\begin{center}
+\begin{tabular}{rcl}
+$f_1(x)$  &=& $\|Ax-y\|_\infty +\|x\|_1$ \\ 
+$f_2(x)$  &=& $\|Ax-y\|_2^2 + \|x\|_1$ \\
+$f_3(x)$  &=& $\|Ax-y\|_2^2 - \|x\|_1$ \\
+$f_4(x)$  &=& $\|Ax-y\|_2^2 + \|x\|_1^2$ 
+\end{tabular}
+\end{center}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 3 (Regularized least-squares problem with low-rank data)}
+
+Consider the problem
+\[
+p^* \doteq \min_{x} \: \|Ax - y\|_2^2+ \lambda \|x\|_2^2
+\]
+where $A \in \mathbb{R}^{m,n}$, $y \in \mathbb{R}^{m}$ and the penalty parameter $\lambda \ge 0$ are given. In this exercise, we show that if $A$ is low-rank, and a low-rank decomposition is known, then we can exploit that structure to greatly reduce the computational burden involved.
+
+\begin{enumerate}
+	\item Assume that $A$ has rank $r << \min(n,m)$, and that a low-rank decomposition of $A$ is of the form $A = LR^T$ is known, with $L \in \mathbb{R}^{m,r}$, $R \in \mathbb{R}^{n,r}$ both full rank. Explain how to reduce the problem to one with $r$ variables only.
+
+	\item Discuss the complexity of the method and compare it to that of a ``direct'' approach where the low-rank structure is ignored.
+
+	\item In the notebook \verb+lpqp_low_rank_ls.ipynb+, we have generated some random data for $r=10, m=1000, n=1000$. Implement the direct approach and compare it with the low-rank approach.
+	
+	\item We investigate how this approach can be used even when the data is full-rank. In particular, we generated a full-rank data matrix $A$ for $m=300, n=300$ in the second part of the notebook \verb+lpqp_low_rank_ls.ipynb+ but for which most of the variance is explained in the first $\hat{r}$ eigenvalues. In that particular case, we provide you with code that approximates your matrix $A$ with $\hat{A}$ of rank $r$ for all $r$, solves the low-rank problem based on your previous code, and plots the error $p^*$ as a function of $r$. Use this graph to make a guess about $\hat{r}$ and interpret.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 4 (A Boolean problem of maximal margin)}
+
+We have to decide which items to sell among of a collection of $n$ items, with given selling prices $s_i>0$, $i=1,\ldots,n$. Selling implies a transaction cost $c_i>0$ for each item $i$; the total transaction cost is the sum of these costs, plus a fixed amount $d>0$ (say, $d=1$). We are interested in the following decision problem: which items need to be sold, in order to maximize the margin (revenue-to-cost ratio). \textit{Assume a transaction will occur for all items we choose to sell.}
+
+\begin{enumerate}
+	\item Show that the problem can be formalized as
+	\[
+	p^* \doteq \max_{x \in \{0,1\}^n} \: f(x), \;\; f(x) \doteq \frac{s^T x}{1+c^T x} .
+	\]
+
+	\item Show that the problem admits a one-dimensional formulation:
+	\[
+	p^* = \min_{t \ge 0} \: t ~:~ t  \ge \mathbf{1}^T (s-tc)_+.
+	\]
+	Here $z_+$, for a vector $z \in \Real{n}$, denotes the vector with components $\max(0,z_i)$, $i=1,\ldots,n$. {\em Hint:} for given $t \ge 0$, express the condition $f(x) \le t$ for every $x \in \{0,1\}^n$ in simple terms.
+
+	\item Let us assume the inequality constraint $t \ge \mathbf{1}^T (s-ct)_+$ is active at optimum. How can you recover an optimal solution $x^*$ from an optimal value $t^*$ for the above problem?
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 5 (Robust production plans)}
+
+Recall the drug production problem discussed in lectures 10 (slide 22) and 13. A company produces two kinds of drugs, DrugI and DrugII, containing a specific active agent A, which is extracted from raw materials purchased on the market. There are two kinds of raw materials, RawI and RawII, which can be used as sources of the active agent.  The related production, cost and resource data are given next.  The goal is to find the production plan which maximizes the profit of the company. \\ \\
+Let $x_{\text{rmDrugI}}$, $x_{\text{rmDrugII}}$ denote the amounts (in 1000 of packs) of Drug I and II produced, while $x_{\text{rmRawI}}$, $x_{\text{rmRawII}}$ denote the amounts (in kg) of raw materials to be purchased. We seek to find the production and raw material amounts that maximize profit (revenue minus cost). Furthermore, we are subject to constraints on the balance of the active agent, storage, manpower, equipment, and budget, and constrain all variables to be non-negative. \\ \\
+
+Putting this together, we get the LP:
+\begin{align*}
+    \min_{x} c^T x \; \; : Ax \leq b, \; x \geq 0.
+\end{align*}
+where $x= (x_{\text{RawI}},x_{\text{RawII}},x_{\text{DrugI}},x_{\text{DrugII}})$. For details on how this optimization problem is formulated, please see slide 22 in lecture 10.
+
+We now assume that the vector $c$, which represents cost minus revenue, is subject to scenario uncertainty. Precisely, $c$ is only known to belong to a given set of the form
+\[
+{\cal C} = \left\{ c^{(k)} = \hat{c} + \rho \delta c^{(k)}, \;\; k=1,\ldots,K \right\},
+\]
+where $\hat{c} \in \mathbb{R}^{4}$ is the nominal value, $\delta c^{(k)}$ is the $k$-th scenario and $\rho \geq 0$ is a measure of uncertainty. To any given candidate solution $x \in \mathbb{R}^{4}$, we define the worst-case cost as
+\[
+p^{\rm wc}(x) := \max_{c \in {\cal C}} \: c^Tx.
+\]
+We have loaded the data for this problem in the notebook {\tt drug\_prod.ipynb}.
+\begin{enumerate}
+\item Solve for the nominal problem's solution $x^{\rm nom}$, in which $c = \hat{c}$, and compute the profit. Compute the worst-case profit of this plan.
+	
+\item Derive the robust counterpart of the problem, based on optimizing the worst-case cost. Compare the robust solution to the nominal one, in terms of nominal cost and in terms of worst-case cost, and comment.
+
+\item Plot the elements of the robust solution as the uncertainty level $\rho$ grows. What is the smallest value of $\rho$ for which the robust solution is zero?
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 6 (Robust linear programming)}
+
+In this problem we will consider a version of linear programming under uncertainty.
+\begin{enumerate}
+	\item Let $x \in \mathbb{R}^n$ be a given vector. Prove that $x^Ty \leq \|x\|_1$ for all $y$ such that $||y||_{\infty} \leq 1$. Is this inequality tight? (Is there always a $y$ such that the equality holds ?)
+	
+\end{enumerate}
+
+Let us focus now on a LP in standard form:
+\begin{align}
+    &\min_x c^Tx \nonumber \\
+    \label{LP}
+    \text{s.t.} \; \; &a_i^Tx \leq b_i, \; \; i = 1,...,m
+\end{align}
+
+Consider the set of linear inequalities in (\ref{LP}). Suppose you don't know the coefficients $a_i$ exactly. Instead you are given nominal values $\overline{a}_i$, and you know that the actual coefficient vectors satisfy $\|a_i - \overline{a}_i\|_{\infty} \leq \rho $ for a given $\rho > 0$. In other words, the actual coefficients $a_{ij}$ can be anywhere in the intervals $[\overline{a}_{ij} - \rho, \overline{a}_{ij} + \rho]$.  or equivalently, each vector $a_i$ can lie anywhere in a rectangle with corners $\overline{a}_i + v$ where $v \in \{-\rho, \rho\}^n$. The set of inequalities that constrain problem~\ref{LP} must be satisfied for all possible values of $a_i$; i.e., we replace these with the constraints
+    \begin{equation}
+    \label{rob_constr}
+           a_i^Tx \leq b_i \; \; \forall a_i \in \{\overline{a}_i + v \; \mid \|v\|_{\infty} \leq \rho \} \; \;  i = 1, ..., m.
+    \end{equation}
+   
+    A straightforward but very inefficient way to express this constraint is to enumerate the $2^n$ corners of the rectangle of possible values $a_i$ and to require that
+    \[
+    \overline{a}_i^Tx + v^Tx \leq b_i \; \; \forall v \in \{-\rho, \rho\}^n \; \; i = 1, ..., m.
+    \]
+    
+    \begin{enumerate}
+    \item[2.]
+    Use the previous result to show that (\ref{rob_constr}) is in fact equivalent to the much more compact set of nonlinear inequalities 
+    \[ 
+        \overline{a}_i^Tx + \rho\|x\|_1 \leq b_i, \; \; i = 1,...,m. 
+    \]
+    
+    \end{enumerate}
+    
+    We now would like to formulate the uncertainty in the LP we introduced. We are therefore interested in situations where the coefficient vectors $a_i$ are uncertain, but satisfy bounds $\|a_i - \overline{a}_i\|_{\infty} \leq \rho$  for given $\overline{a}_i$ and $\rho$. We want to minimize $c^Tx$ subject to the constraint that the inequalities $a_i^Tx \leq b_i$ are satisfied for $\textit{all}$ possible values of $a_i$. \\ \\
+    We call this a $\textit{robust LP}:$ 
+    \begin{align}
+    &\min_x c^Tx \nonumber \\
+    \label{RLP}
+    \text{s.t.} \; \;  &a_i^Tx \leq b_i, \; \; \forall a_i \in \{ \overline{a}_i + v \mid \|v\|_{\infty} \leq \rho \} \; \; \; i = 1,...,m.
+\end{align}
+
+\begin{enumerate}
+    \item[3.] Using the result from part 2, express the above optimization problem as an LP.
+    
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\end{document}
