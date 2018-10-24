@@ -147,7 +147,6 @@ where $A \in \mathbb{R}^{m,n}$, $y \in \mathbb{R}^{m}$ and the penalty parameter
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
 \end{solution}
 
 \newpage
@@ -171,7 +170,38 @@ We have to decide which items to sell among of a collection of $n$ items, with g
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item Let $x \in \{0,1\}^n$ be a vector such that $x_i = 1$ means we are selling item $i$ and $x_i = 0$ if we aren't selling item $i$.
+
+    Then revenue $R = s^T x$ and cost $C = c^T x + d$ where $d = 1$. Thus we can formalize this problem as the optimization:
+    \begin{align*}
+        p^* = \max_{x \in \{0,1\}^n} f(x), \quad f(x) = \frac{s^T x}{c^T x + 1}
+    \end{align*}
+
+    \item Note:
+    \begin{align*}
+        \max_x f_0(x) &= \min_{x,t} t \quad : \quad f_0(x) \leq t \\
+        t^* &= \max_x f_0(x)
+    \end{align*}
+
+    For any $t \geq 0$ we can write $f(x) \leq t$ as:
+    \begin{align*}
+        \frac{s^T x}{c^T + 1} &\leq t \\
+        t c^T x + t &\geq s^T x \\
+        t &\geq s^Tx - t c^T x \geq 0 \\
+        t &\geq (s_1 - t c_1)x_1 + \dots + (s_n - t c_n)x_n \geq 0 \\
+        t &\geq \mathbf{1}_n (s-tc)_{+}
+    \end{align*}
+
+    Note that we can set $x_i$ to 0 if $s_i - t c_i$ is negative to make sure $t \geq 0$ is satisfied.
+
+    Then, putting this in standard form:
+    \begin{align*}
+        p^* = \min_{t \geq 0} t \quad : \quad t \geq \mathbf{1}^T (s - tc)_{+}
+    \end{align*}
+
+    \item At optimum $t^* = (s_1 - c_1 t^*)x_1 + \dots + (s_n - c_n t^*)x_n$. To recover $x_i$, just set it to 1 if $(s_i - c_i t^*)$ is positive else set it to zero.
+\end{enumerate}
 \end{solution}
 
 \newpage
