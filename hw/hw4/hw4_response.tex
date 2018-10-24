@@ -267,6 +267,50 @@ x_nom:
 profit_nom: 8819.657742458643
 worst_profit: 1515.528520317108
         \end{minted}
+
+    \item We are solving:
+    \begin{align*}
+        \min_x p^{wc}(x) = \min_x \max_{c \in C} c^T x \quad : \quad Ax \leq b, x \geq 0
+    \end{align*}
+    To solve this, introduce a slack variable to pull the $\max$ function into the constraints, and then enumerate the $max$ function over all $c^{(k)}$.
+    \begin{align*}
+        \min_{x, t} t \quad : \quad Ax \leq b, x \geq 0, t &\geq \max_{c \in C} c^T x \\
+        t &\geq c^{(i)T} x \quad \forall i = 1, \dots, K
+    \end{align*}
+    \begin{minted}{python}
+def solve_robust(A, b, c_hat, rho, deltaC):
+    x_rob = cp.Variable(4)
+    t = cp.Variable(1)
+    objective = cp.Minimize(t)
+    constraints = [
+        A * x_rob <= b,
+        x_rob >= 0,
+    ]
+    rob_constraints = [t >= cp.sum((c_hat + np.multiply(rho, ck)) * x_rob) for ck in deltaC]
+    all_constraints = constraints + rob_constraints
+    prob = cp.Problem(objective, all_constraints)
+    result = prob.solve()
+    return x_rob.value, result
+    \end{minted}
+    \begin{minted}{python}
+x_rob, cost_rob = solve_robust(A, b, c_hat, rho, deltaC)
+print('x_rob:\n{}'.format(x_rob))
+print('profit_rob: {}'.format(-1. * cost_rob))
+print('worst_profit: {}'.format(-1. * worst_cost(x_rob, c_hat, rho, deltaC)))
+    \end{minted}
+    \begin{minted}{python}
+x_rob:
+[8.77192982e+02 4.48255474e-08 1.75438596e+01 4.02905624e-10]
+profit_rob: 5689.9470812993395
+worst_profit: 5689.947081802748
+    \end{minted}
+    The robust solution optimizes for maximizing the worst case profit, so the worst case profit is equal to the solution itself. The robust optimal $x_{rob}$ yields a smaller nominal cost than the nominal $x_{nom}$.
+
+    \item
+    The smallest value of $\rho$ for which the robust solution is 0 is around 0.085.
+    \begin{figure}[H]
+        \centerline{\includegraphics[width=0.5\textwidth]{problem5_profit_vs_rho.png}}
+    \end{figure}
 \end{enumerate}
 \end{solution}
 
