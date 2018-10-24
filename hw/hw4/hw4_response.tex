@@ -13,6 +13,7 @@
 \usepackage{enumitem}
 \usepackage{amsthm,amssymb}
 \usepackage{float}
+\usepackage{minted}
 \setlength\parindent{0pt}
 \newcommand{\solution}{\subsection*{Solution:}}
 \DeclareMathOperator*{\argmax}{arg\!max}
@@ -235,7 +236,38 @@ We have loaded the data for this problem in the notebook {\tt drug\_prod.ipynb}.
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item
+        \begin{minted}{python}
+def solve_nominal(A, b, c_hat):
+    x_nom = cp.Variable(4)
+    objective = cp.Minimize(cp.sum(c_hat * x_nom))
+    constraints = [
+        A * x_nom <= b,
+        x_nom >= 0
+    ]
+    prob = cp.Problem(objective, constraints)
+    result = prob.solve()
+    return x_nom.value, result
+        \end{minted}
+        \begin{minted}{python}
+def worst_cost(x, c_hat, rho, deltaC):
+    costs = [np.dot(np.add(c_hat, np.multiply(rho, ck)), x) for ck in deltaC]
+    return np.max(costs)
+        \end{minted}
+        \begin{minted}{python}
+x_nom, cost_nom = solve_nominal(A, b, c_hat)
+print('x_nom:\n{}'.format(x_nom))
+print('profit_nom: {}'.format(-1. * cost_nom))
+print('worst_profit: {}'.format(-1. * worst_cost(x_nom, c_hat, rho, deltaC)))
+        \end{minted}
+        \begin{minted}{text}
+x_nom:
+[4.95900359e-06 4.38788940e+02 1.75515577e+01 5.85913325e-10]
+profit_nom: 8819.657742458643
+worst_profit: 1515.528520317108
+        \end{minted}
+\end{enumerate}
 \end{solution}
 
 \newpage
