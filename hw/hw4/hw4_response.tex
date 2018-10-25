@@ -20,6 +20,8 @@
 \DeclareMathOperator*{\argmin}{arg\!min}
 \DeclareMathOperator*{\trace}{trace}
 \DeclareMathOperator*{\sign}{sign}
+\DeclareMathOperator*{\Range}{Range}
+\DeclareMathOperator*{\Nullspace}{N}
 \graphicspath{{./figs/}}
 
 \begin{document}
@@ -149,6 +151,16 @@ where $A \in \mathbb{R}^{m,n}$, $y \in \mathbb{R}^{m}$ and the penalty parameter
 \end{enumerate}
 
 \begin{solution}
+\begin{enumerate}
+    \item Decompose x into the sum of 2 orthogonal vectors. $x = Rv + r$ where $v \in \mathcal{R}(R)$ and $r \in \mathcal{N}(R^T)$, where $\mathcal{R}, \mathcal{N}$ are the range and nullspace of a matrix respectively. This can always be done by the fundamental theorem of linear algebra. Note $R^T r = 0$. The dimension of $v$ is (rx1) and the dimension of $r$ is (nx1).
+
+    \begin{align*}
+        &\min_x \|Ax - y\|_2^2 + \lambda \|x\|_2^2 \\
+        &\min_{v,r} \|L R^T (Rv + r) - y\|_2^2 + \lambda \|Rv + r\|_2^2 \\
+        &\min_{v,r} \|L R^T R v + L R^T r - y\|_2^2 + \lambda \|Rv + r\|_2^2 \\
+        &\min_{v} \|L R^T R v + 
+    \end{align*}
+\end{enumerate}
 \end{solution}
 
 \newpage
