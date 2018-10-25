@@ -19,6 +19,7 @@
 \DeclareMathOperator*{\argmax}{arg\!max}
 \DeclareMathOperator*{\argmin}{arg\!min}
 \DeclareMathOperator*{\trace}{trace}
+\DeclareMathOperator*{\sign}{sign}
 \graphicspath{{./figs/}}
 
 \begin{document}
@@ -363,7 +364,35 @@ Consider the set of linear inequalities in (\ref{LP}). Suppose you don't know th
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item
+    \begin{align*}
+        x^T y \leq \|x\|_1 \quad &: \quad \|y\|_\infty \leq 1 \\
+        \sum_{i=1}^n x_i y_i \leq \sum_{i=1}^n |x_i| \quad &: \quad \max_{i=1,\dots,n} |y_i| \leq 1 \rightarrow y_i \in [-1, 1] \\
+        \text{to maximize LHS set } y_i &= \sign(x_i) \\
+        \sum_{i=1}^n x_i \sign(x_i) &= \sum_{i=1}^n |x_i|
+    \end{align*}
+    So the inequality always holds, and it can be made tight by setting $y_i = \sign(x_i)$.
+
+    \item
+    \begin{align*}
+        a_i^T x &\leq b_i \quad \forall a_i \in \{\overline{a_i} + v, \|v\|_\infty \leq \rho\}, i = 1, \dots, m \\
+        (\overline{a_i} + v)^T x &\leq b_i \quad \{\|v\|_\infty \leq \rho\} \\
+        \overline{a_i}^T x + x^T v &\leq b_i \\
+        \text{Noting } x^T v \leq \rho \|x\|_1 \text{ and } x^T v &= \rho \|x\|_1 \text{ when } v_i = \sign(x_i) \rho \\
+        \overline{a_i}^T x + \rho \|x\|_1 &\leq b_i
+    \end{align*}
+
+    The move from line 4 to 5 is OK because these are linear constraints and we want to stress them at the limits (rectangular box).
+
+    \item Write the constraint from the last part as a set of linear constraints. Introduce slack variable $u \in \mathbb{R}^n$.
+    \begin{align*}
+        \overline{a_i}^T x + \rho \|x\|_1 &\leq b_i \quad i = 1, \dots, m \\
+        \overline{a_i}^T x + \rho \sum_{j=1}^n u_j & \leq b_i \quad i = 1, \dots, m\\
+        &|x_j| \leq u_j \quad j = 1, \dots, n
+    \end{align*}
+    Now these constraints are linear in $u$ and $x$.
+\end{enumerate}
 \end{solution}
 
 \end{document}
