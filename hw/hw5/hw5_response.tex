@@ -1,0 +1,126 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsfonts, amsmath}
+\usepackage{tikz}
+\usepackage[nobreak=false]{mdframed}
+\usepackage{pgf}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsthm,amssymb}
+\setlength\parindent{0pt}
+\newcommand{\solution}{\subsection*{Solution:}}
+
+\begin{document}
+
+\title{EE127 Homework 5}
+\author{Vighnesh Iyer}
+\date{\today}
+\maketitle
+
+\subsection*{Exercise 1 (Minimizing a sum of logarithms)}
+
+Consider the following problem:
+\begin{align*}
+p^*=\max_{x\in\mathbb{R}^{n}}\;\; & \sum_{i=1}^n \alpha_i \ln x_i \\
+\text{s.t.}\;\; & x\geq 0,\quad 1^T x = c,
+\end{align*}
+where $c > 0$ and $\alpha_i > 0$, $i=1,\ldots,n$.
+Problems of this form arise, for instance, in maximum-likelihood estimation
+of the transition probabilities of a discrete-time Markov chain.
+Determine in  closed-form a minimizer, and
+show that the optimal objective value  of this  problem is
+\[
+p^* = \alpha\ln(c/\alpha) +\sum_{i=1}^n \alpha_i\ln\alpha_i,
+\]
+where $\alpha\doteq \sum_{i=1}^n \alpha_i$.
+
+\begin{solution}
+\end{solution}
+
+\newpage
+\subsection*{Exercise 2 (KKT conditions)}
+
+Consider the optimization problem
+\begin{align*}
+&\min_{x \in \mathbb{R}^{n}} \: \sum_{i=1}^n \left(\frac{1}{2}d_i x_i^2 + r_ix_i\right)\\
+&\text{s.t.} \;\; a^T x=1, \;\; x_i \in [-1,1], \;\; i=1,\cdots,n,
+\end{align*}
+where $a \neq 0$ and $d> 0$. \\ \\ 
+In this exercise, we will use the KKT conditions and/or the Lagrangian to come up with a fast algorithm to solve this optimization problem. Recall that the KKT conditions, as defined in Lecture 20, are:
+\begin{itemize}
+    \item Primal feasibility: $x \in \mathcal{D}, f_i(x) \leq 0, i = 1, \dots, m$
+    \item Dual feasibility: $\lambda \geq 0$
+    \item Complementary slackness: $\lambda_i f_i(x) = 0, i = 1, \dots, m$
+    \item Lagrangian stationarity: $x \in \text{arg} \min \mathcal{L}(\cdot, \lambda)$
+\end{itemize}
+\begin{enumerate}
+\item Verify that strong duality holds for this problem, and write down the KKT optimality conditions.
+
+\emph{Hint: } For algebraic convenience throughout the problem, we recommend you express the constraint $x_i \in [-1, 1]$ as $x_i^2 \leq 1$.
+
+\item The dual problem amounts to maximizing the dual function $g(\lambda,\mu)$ w.r.t.\ $\mu$ and $\lambda\geq 0$. Write this dual function.
+
+\item  Find the maximum of $g(\lambda,\mu)$ w.r.t.\ $\lambda$, for fixed $\mu$. In particular, write down a closed-form expression for the corresponding optimal point $\lambda_i^*(\mu)$.
+
+\item Using your previous results, express the optimal primal point $x_i^*(\mu)$ as a function of the scalar dual variable $\mu$ only.
+\end{enumerate}
+The optimal $\mu$ is the value which makes the constraint $\sum_{i} a_ix_i^*(\mu) = 1 $ satisfied.
+We can find this value by bisection over $\mu$. Since the gradient of $g(\lambda^*,\mu)$ with respect to $\mu$
+is simply given by $a^T x_i^*(\mu)-1$, we increase
+$\mu$ when the gradient is positive, and decrease it when it is negative. In practice, we initialize two values
+$\mu_l< 0$, $\mu_r>0$ for which we know a priori that $\mu^*\in[\mu_l,\, \mu_r]$, and execute the following bisection algorithm.
+\begin{enumerate}
+\item[(a)] Set $\mu = (\mu_r + \mu_l)/2$
+\item[(b)] Evaluate $h = a^T x^*(\mu)-1$
+\item[(c)] If $h>0$, let $\mu_l = \mu$, else let $\mu_r = \mu$
+\item[(d)] If $|\mu_r - \mu_l|\leq \epsilon$ or $h=0$, exit and return $\mu$, else goto (a).
+\end{enumerate}
+
+\begin{enumerate}
+\item[5.] Let $l$ be the length of the initial localization interval. Provide a simple upper bound on the number of iterations needed to reach a value of $\mu$ within $\epsilon$ from the true optimum $\mu^*$.
+\item[6.] In the notebook \verb+kkt_conditions.ipynb+, implement the bisection algorithm and compare it with the solution obtained via CVX (or another solver of your choice). Recommended values for $\mu_l, \mu_r, \epsilon$ are provided for you in the notebook. 
+\end{enumerate}
+In the following exercise, you will study through another example how to find a proper initialization for $\mu_l$ and $\mu_r$.
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 3 (Trust region subproblem)}
+
+Consider the problem
+\[
+p^* = \min_x \: x^T Qx + 2 c^T x ~:~ \|x\|_2 = 1.
+\]
+where $Q \in \mathbb{S}^{n}$ is symmetric positive semi-definite and $c \in \mathbb{R}^{n}$.
+\begin{enumerate}
+	\item Is the problem, as stated, convex?
+	\item Show that the problem can be reduced to
+\[
+p^* = \min_y \: \sum_{i=1}^n \left( \lambda_i y_i^2 + 2 d_i y_i \right) ~:~ \sum_{i=1}^n y_i^2 = 1,
+\]
+for appropriate vectors $\lambda,d \in \mathbb{R}^{n}$, which you will determine as functions of the problem data.
+\item Show that the problem can be further reduced to the convex problem
+\[
+p^* = \min_z \: \sum_{i=1}^n \left( \lambda_i z_i - 2 |d_i| \sqrt{z_i} \right) ~:~ \sum_{i=1}^n z_i = 1, \;\; z \ge 0.
+\]
+\item Express the dual of the above problem as one with a single variable.
+\item We can solve the one-dimensional dual problem by bisection on the dual variable (see previous exercise for an example of bisection). This requires finding an initial interval in which any optimal dual variable lies. To obtain fast convergence, we want the length of this interval to be as small as possible. Find an initial interval with length no more than $2\|d\|_2$.
+
+\emph{Hint:} Introduce variables $\eta, \delta_i$ and $\phi^*$ such that $\eta = \lambda_n - \nu \ge 0$, $\delta_i = \lambda_i - \lambda_n \ge 0, \phi^* = \lambda_n - p^*$ (or depending on your problem formulation, $\eta = \lambda_n + \nu \geq 0, \delta_i = \lambda_i - \lambda_n, \phi^*=p^*+\lambda_n$). Then, try to bound $\eta^*$ with the problem data. 
+
+\item From now on, we assume we computed the optimal $\nu$ (one could implement the algorithm from the previous exercise). How do you recover an optimal primal variable $x$?
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\end{document}
