@@ -14,6 +14,7 @@
 \usepackage{amsthm,amssymb}
 \setlength\parindent{0pt}
 \newcommand{\solution}{\subsection*{Solution:}}
+\newcommand{\Lagr}{\mathcal{L}}
 
 \begin{document}
 
@@ -105,6 +106,23 @@ You may assume throughout the exercise that the problem is strictly feasible.
         \item $m(p) \geq \beta \rightarrow r(p)(\beta - 1) + c^T d(p) \leq 0$, which is a convex quadratic constraint (since $r(p)$ is convex and $\beta - 1$ is negative)
         \end{enumerate}
     Therefore, this is a QCQP.
+
+\item We can dualize the quadratic constraint and obtain an optimization problem in the expected form:
+    \begin{align*}
+        \Lagr(p, \lambda) &= r(p) + \lambda (r(p)(\beta - 1) + c^T d(p)) \\
+        p^* &= \max_p \min_{\lambda \geq 0} r(p) + \lambda (r(p)(\beta - 1) + c^T d(p)) \quad : \quad p_l \leq p_i \leq p_u, 0 \leq d(p) \leq d^{max} \\
+        d^* &= \min_{\lambda \geq 0} \max_p r(p) + \lambda (r(p)(\beta - 1) + c^T d(p)) \quad : \quad p_l \leq p_i \leq p_u, 0 \leq d(p) \leq d^{max} \\
+        D(\lambda) &= \max_p r(p) + \lambda (r(p)(\beta - 1) + c^T d(p))
+    \end{align*}
+        Because this problem is strictly feasible, and the original objective is concave over maximization, we can apply Slater's conditions, and find $d^* = p^*$. $D(\lambda)$ is convex over $p$ since it is a maximization of a concave function.
+
+\item $D(\lambda)$ can be computed by recognizing that each element of $p$, $p_i$ can be maximized independently of any other element. So we can solve this set of 1-D maximization problems via bisection
+    \begin{align*}
+        D(\lambda)_i = \max_{p_i} \max_p r(p) + \lambda (r(p)(\beta - 1) + c^T d(p))
+    \end{align*}
+    These bisections take $\mathcal{O}(n log(n))$ time, and solving for $\lambda^*$ is just another bisection, so it will take $\mathcal{O}(n)$ time, ignoring all the logarithmic factors.
+
+\item Using $\lambda^*$, plug it for $\lambda$ in the $p^*$ equation, then reduce the maximization over $p$ to $n$ 1-D maximizations over $p_i$ and solve each one using bisection to find $p^*$. The time complexity is $\mathcal{O}(n)$.
 \end{enumerate}
 \end{solution}
 
