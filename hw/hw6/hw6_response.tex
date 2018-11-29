@@ -1,0 +1,268 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.8in]{geometry}
+\usepackage{amsfonts, amsmath}
+\usepackage{tikz}
+\usepackage[nobreak=false]{mdframed}
+\usepackage{pgf}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{amsthm,amssymb}
+\setlength\parindent{0pt}
+\newcommand{\solution}{\subsection*{Solution:}}
+
+\begin{document}
+
+\title{EE127 Homework 6}
+\author{Vighnesh Iyer}
+\date{\today}
+\maketitle
+
+\subsection*{Exercise 1 (Safe feature elimination in sparse learning)}
+
+Consider the problem
+\[
+p^* = \min_w \: f(X^T w) + \lambda \|w\|_1,
+\]
+where $f : \mathbb{R}^{m} \rightarrow \mathbb{R}_{p}$ is convex, $X \in \mathbb{R}^{n,m}$ and $\lambda >0$.
+
+The above covers many sparse learning problems of interest, in which the function $f$ is usually decomposable as a sum: $f(z) = \sum_{i=1}^m h(z_i)$  with $h$ a convex univariate function, referred to as the loss function. \textit{Note:} In this problem, please do \textbf{not} assume that $f$ is decomposable.
+
+We denote by $a_i^T$ the $i$-th row of $X$, $i=1,\ldots,n$. These vectors correspond to the $i$-th variable in the learning problem. We seek a quick test to determine if we can safely remove variables in the learning problem, without affecting the optimal value. That is particularly helpful in the case of natural language processing studies where the number of features (i.e words) can scale up to a billion.
+
+You may assume strong duality when needed.
+\begin{enumerate}
+\item Let us denote by $f^*$ the so-called ``conjugate'' function of a function $f$, with values $f^*(v) = \max_{z} \: z^T v - f(z)$. Assume without proof that ${(f^*)}^* = f$. Show that a dual to the learning problem is
+\[
+d^* = \max_v \: -f^*(v) ~:~ \|Xv\|_\infty \le \lambda.
+\]
+{\em Hint:} Rewrite the problem using the fact that $(f^*)^* = f$; then, express the problem as a maximization over one variable by adding constraints.
+
+\item Now let $v_0$ be a dual feasible vector. Then we have $\|Xv_0\|_\infty \le \lambda$. Let $\kappa := f^*(v_0)$. Show that, for a given $i \in \{ 1, \ldots, n\}$,  the condition
+\[
+\lambda > \max_{v} \: |a_i^T v| ~:~  f^*(v) \le \kappa
+\]
+allows to safely remove the $i$-th variable in the original problem. That is, we can reset $w_i$ to zero in that problem, and get the same optimal value.
+
+\item Show that the condition above can be expressed as
+\[
+\lambda > \lambda_i := \max\left( \min_{t\geq 0} \: \kappa t + t f(a_i/t), \min_{t \geq 0} \: \kappa t + t f(-a_i/t) \right).
+\]
+Explain why $\min_{t \geq 0} \: \kappa t + t f(a_i/t)$ and $\min_{t \geq 0} \: \kappa t + t f(-a_i/t)$ are convex problems.
+
+{\em Note:} This means the condition in part 2 can be checked very quickly, as it involves solving two one-dimensional convex problems. As you have shown in HW5, one-dimensional convex problems can be solved efficiently using bisection.
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 2 (Retail pricing problem)}
+
+A retailer seeks to optimize the prices of $n$ items, encoded in a vector $p \in \mathbb{R}_{++}^{n}$. For a given price vector $p \in \mathbb{R}^{n}$, the demand for the $n$ items is modeled as an affine map. In economics, this linearity assumption is referred to as \emph{elastic} demand. This demand is modeled by $d : \mathbb{R}^{n} \rightarrow \mathbb{R}^{n}$, with values \( d_i(p) = d_i^0 - g_i (p_i-p_i^0) \) where $p^0$ is a reference price, $d^0$ is the corresponding demand, and $g \in \mathbb{R}_{++}^{n}$ is a vector of price ``elasticities''. We assume that the volume of sales always matches the demand. With this model, the total revenue is expressed as
+$r(p) = p^Td(p)$; we also define the \emph{margin} (profit-to-revenue ratio) as the quantity $ m(p) :=\frac{(p-c)^Td(p)}{p^Td(p)} $ where $c \in \mathbb{R}_{++}^{n}$ is a vector containing the purchasing prices of the items. We seek to maximize the total revenue under several constraints:
+
+\begin{itemize}
+    \item A lower bound on the margin, $m(p) \ge \beta$, where $\beta \in [0,1]$ is given
+    \item Inventory (storage) constraints on the demand, of the form $0 \le d(p) \le d^{\rm max}$, where $d^{\rm max} \in \mathbb{R}_{++}{n}$ is given
+    \item Upper and lower bounds on $p$, of the form $p \in [p_l ,p_u]$, with $0 \le p_l \le p_u$ given.
+\end{itemize}
+
+You may assume throughout the exercise that the problem is strictly feasible.
+\begin{enumerate}
+    \item Express the problem as a convex problem, and label it with one acronym (LP, QP, QCQP, SOCP).
+
+    \textit{Note: } Choose the most constrained suitable problem formulation (e.g. if it can be expressed as LP, do not choose QCQP or SOCP). You do not need to prove that your formulation is the most general possible (e.g. you do not need to show formulating the problem as LP or QCQP is impossible).
+
+    \item Show that the problem can be equivalently written as the one-dimensional problem $\min_{\lambda \ge 0} \: D(\lambda) $ where $D$ is a certain dual function which you will determine. Express $D(\lambda)$ as a convex problem over $p$.
+
+    \item Explain how to compute $D(\lambda)$ in $\mathcal{O}(n)$ time. What is the time complexity of computing $\lambda^*= \min_{\lambda\geq 0} D(\lambda)$?
+    \textit{Note: } If you choose to use bisection, please ignore logarithmic factors introduced (when computing time complexity) and disregard the problem of choosing an initial interval.
+
+    \item Detail how to recover an optimal primal point, once an optimal dual variable $\lambda^* =\min_{\lambda \ge 0} \: D(\lambda)$ is found. What is the time complexity of your process?
+\end{enumerate}
+
+\begin{solution}
+\begin{enumerate}
+\item The problem can be stated as:
+    \begin{align*}
+        \max_{p} r(p) &= \max_{p} \sum_{i=1}^n p_i (d_i^0 - g_i(p_i - p_i^0)) \\
+        p^* &= \max_{p} \sum_{i=1}^n -g_i p_i^2 + p_i(d_i^0 + g_i p_i^0) \\
+        -p^* &= \min_p \sum_{i=1}^n g_i p_i^2 - p_i(d_i^0 + g_i p_i^0)
+    \end{align*}
+    The objective is quadratic and convex because $g_i > 0$.
+
+    The constraints are:
+        \begin{enumerate}
+        \item $p_l \leq p_i \leq p_u$ for $i = 1, \dots, n$, which is a linear box constraint
+        \item $0 \leq d(p) \leq d^{max}$, which is an affine box constraint
+        \item $m(p) \geq \beta \rightarrow r(p)(\beta - 1) + c^T d(p) \leq 0$, which is a convex quadratic constraint (since $r(p)$ is convex and $\beta - 1$ is negative)
+        \end{enumerate}
+    Therefore, this is a QCQP.
+\end{enumerate}
+\end{solution}
+
+\newpage
+\subsection*{Exercise 3 (Optimal execution)}
+
+We are given a fixed number of shares $\bar{s}$ of a single asset, to be purchased over time intervals $t=1,\ldots,T$.  We denote by $s_t$ the amount of shares to be purchased at time $t$, and refer to
+the vector $s=(s_1,\ldots,s_T) \in \mathbb{R}^{T}$ as our sequence of trades, so that $s^T \mathbf{1} = \bar{s}$, where $\mathbf{1} \in \mathbb{R}^{T}$ is a vector of ones.  We treat $s$ as a real vector (not an integer vector), and do not allow short selling, that is, we impose the constraint $s \ge 0$. We denote by $p_t$ the price of the asset at time $t$, and refer to $p = (p_1,\ldots,p_T)$ as the price vector.  The {\em execution cost} associated with a given sequence of trades $s \in \mathbb{R}_{+}^{T}$ is then $\sum_{t=1}^T  p_t s_t$.
+
+As we purchase $s_t$ shares at each time $t$, $t=1,\ldots,T$, the price $p_t$ changes, not only due to (random) market dynamics, but also due to our purchases. A simple model for market impact dynamics is
+\begin{equation}\label{eq:price-dyn}
+p_t = p_{t-1} + \alpha s_t + r_t, \;\; t=0,\ldots,T,
+\end{equation}
+where $p_0$, $\alpha>0$ are model parameters, which we assume known. Here, the exogenous signal $r = (r_1,\ldots,r_T)$, which we also assume to be known for now, reflects the influence of the market as a whole on the price; for example, it may be derived from a simple ({\em e.\/g.}, auto-regressive) model for the SP 500 index. The market impact model above is simplistic as it does not guarantee positive prices, but we ignore that fact here.
+
+Our goal is to find the best sequence of trades $s$ so as to minimize the execution cost, subject to the constraints on $s$.
+\begin{enumerate}
+\item Show that we can write $p = A(\alpha s+r)+q$, where $A$ a lower-triangular $T \times T$ matrix with $1$'s on the lower-triangular part, and $q\in \mathbb{R}^{n}$ is given.
+
+\item Write the problem with decision variables $s,p$, and including the constraint~(\ref{eq:price-dyn}). In that form, is the problem convex? Justify your answer carefully.
+
+\item Write the problem as a QP in standard form. State precisely the variables and constraints.  Make sure to check that the objective function is quadratic and convex in the variables of the problem.
+
+{\em Hint:} Show that $q(s) := s^T As = s^TQs$, with $Q := (1/2) (A+A^T)$, and that $2Q-I$ is PSD, with $I$ the $T \times T$ identity matrix.
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 4 (Hydro-electric power generation)}
+
+This exercise deals with the daily management of a set of hydro-electric plants in a valley. The goal is to balance the amount of water that is processed through different turbines that generate electricity, versus the amount that is conserved in reservoirs for future use. The planning takes place over a given time period, spanning typically a day, over which we plan to minimize cost.
+
+\begin{figure}[h!]
+\begin{center}
+% \includegraphics[width = 0.5\textwidth]{figures/hydro-power.pdf}
+\caption{A hydro-electric plant.}
+\end{center}
+\end{figure}
+
+In this simplified version, we assume that the amount of water flowing into the reservoirs (due to rain or snow) is known in advance. The goal is to solve for the amounts processed through the turbines, to minimize a cost function. This function is assumed here to be fully known, although in practice it can depend on various factors, such as what happens with other electricity generation plants in the company's portfolio.
+
+The optimization problem involves several time steps, denoted $k=1,\ldots,K$; reservoirs, denoted  $l = 1, \ldots, L$; hydro-electric plants, denoted $i = 1, \ldots, I$. Each plant may have several turbines, labelled with $j=1,\ldots,J$, each with different rates of power generated versus volume of water processed.
+
+We consider a specific problem with $K = 3$ time steps, with the topology given in Fig.~\ref{fig:lpqp_hydro_valley}.
+\begin{figure}[ht]
+\begin{center}
+% \includegraphics[width = 0.5\textwidth]{figures/hydro.pdf}
+\caption{\label{fig:lpqp_hydro_valley} A specific hydro-electric valley.}
+\end{center}
+\end{figure}
+
+We use the following notation.
+\begin{itemize}
+\item $V_{l,0}$ is the initial (known) volume and $V_{l,K}$ is the final volume of reservoir $l$ (expressed in $[m^3]$).
+\item The value of usage of the reservoir $l$ is denoted as $w_l$ (expressed in $[\$/m^3]$).
+\item $\lambda_k$ represents the price for electric power paid at time $k$, expressed in [\$/MWh].
+\item $\rho_j$ represents the efficiency of turbine $j$, expressed in $[MW/m^3]$.
+\item $T_{j,k}$ is the volume of water going through turbine $j$ at time $k$ (in $[m^3]$).
+\end{itemize}
+Let $V$ be an $L \times K$ matrix and $T$ a $J \times K$ matrix that represent respectively the volume of reservoirs and the volume of water going through the turbines at different timesteps.
+
+We seek to minimize the overall cost of production. The objective function $F$ reflecting the arbitration between immediate use of water through a turbine, or water conservation for later use, is:
+\begin{align*}
+F(V,T) &=& \sum_{l=1}^{L} w_l(V_{l,0} - V_{l,K}) - \sum_{k=1}^{K}\sum_{j=1}^{J} \lambda_k \rho_{j}T_{j,k}
+\\
+&=&  \sum_{l=1}^{L} w_lV_{l,0}  - \left( \sum_{l=1}^{L} w_lV_{l,K} + \sum_{k=1}^{K}\sum_{j=1}^{J} \lambda_k \rho_{j}T_{j,k}\right)
+\end{align*}
+
+The constraints are as follows.
+\begin{itemize}
+\item The evolution of the volumes of the reservoirs must meet a flow equation:
+\[
+V_{l,k} = V_{l,k-1} + A_{l,k} + \sum_{j \in U_l} T_{j,k - d_{j}^l} - \sum_{j \in D_l} T_{j,k + d_{j}^l}
+\]
+where
+\begin{itemize}
+\item $j \in U_l$: turbine $j$ upstream of the reservoir $l$;
+\item $j \in D_l$: turbine $j$ downstream of the reservoir $l$;
+\item $d_{j}^{l}$: the delay of water flow inside the plant, from upstream turbine if $j \in U$ and to downstream turbine if $j \in D$. For this exercise, we ignore the delay, i.e. $d_{j}^{l} = 0$;
+\item $A_{l,k}$:  water inflow (e.g. rain, melt snow) to reservoir $l$ at time $k$.
+\end{itemize}
+
+\item We have bounds on the volumes of water going through turbines:
+\[
+T_{j,k}^{\min} \le T_{j,k} \le T_{j,k}^{\max}, \;\; \forall \: k, j.
+\]
+For simplicity, we will set $T_{j,k}^{\min} = 0$.
+
+\item We have bounds on the volumes of reservoirs:
+\[
+V_{l,k}^{\min} \le V_{l,k} \le V_{l, k}^{\max}, \;\; \forall \: k, l.
+\]
+\end{itemize}
+
+\begin{enumerate}
+    \item Consider the valley topology in Fig.~\ref{fig:lpqp_hydro_valley} (notations are different from the one in the text). In the figure, let reservoir 1 and 2 refer to the upstream and downstream reservoirs, respectively. Furthermore, let turbines 1 and 2 refer to the groups $G_1, G_2$ in plant 1, and turbine 2 refer to the group $G_3$ in plant 2.  \\ \\
+    Show that the flow equations are:
+\begin{itemize}
+\item Time $k = 1$: \\
+Reservoir $l = 1$: $V_{11} = V_{10} + A_{11} - (T_{11} + T_{21})$,\\
+Reservoir $l = 2$: $V_{21} = V_{20} + A_{21} + (T_{11} + T_{21}) - T_{31}$.
+\item Time $k = 2$:\\
+Reservoir $l = 1$: $V_{12} = V_{11} + A_{12} - (T_{12} + T_{22})$,\\
+Reservoir $l = 2$: $V_{22} = V_{21} + A_{22} + (T_{12} + T_{22}) - T_{32}$.
+\item Time $k = 3$:\\
+Reservoir $l = 1$: $V_{13} = V_{12} + A_{13} - (T_{13} + T_{23})$,\\
+Reservoir $l = 2$: $V_{23} = V_{22} + A_{23} + (T_{13} + T_{23}) - T_{33}$.
+\end{itemize}
+
+\item Solve for the optimal $\hat{T}$ when $\lambda = (10,30,8)^T$. Use the parameters loaded for you in the notebook.
+
+\item We are now due to solve a new problem with slightly different input parameters.  Due to contractual constraints, the new solution $T$ should not differ from the previous configuration $\hat{T}$. Precisely, we would like to limit the \emph{number} of turbines that would be affected by a change by restricting the number of rows in the matrix $T$ that differ from the corresponding rows in $\hat{T}$. Formally, construct a convex proxy $R(T-T')$, that penalizes the sum of the absolute values of maximum change in turbine flow between the rows of $T$ and $T'$. Use a regularization parameter of $\gamma=10^{10}$ in your implementation---so the entire term added to the objective is $\gamma R(T-T')$.
+
+\textit{Hint:} Define a convex proxy function for the number of changes, with a regularization parameter that you can take to be $\gamma = 10 ^{10}$.
+
+\item Test your heuristic with the data loaded for you in part 2 of the notebook:
+
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\newpage
+\subsection*{Exercise 5 (Robust Machine Learning)}
+
+We consider a binary classification problem, where the prediction label associated with a test point $x \in \mathbb{R}^{n}$, is the form $\hat{y}(x) = \mbox{\bf sign}(w^Tx+v)$, with $(w,v) \in \mathbb{R}^{m} \times \mathbb{R}$ the classifier weights. Given a training set $X,y$, with $X = [x_1,\ldots,x_m]\in \mathbb{R}^{n \times m}$ the data matrix, with data points $x_i \in \mathbb{R}^{n}$, $i=1,\ldots,m$, and $y \in \{-1,1\}^m$ the vector of corresponding labels, the training problem is to minimize the so-called hinge loss function:
+\begin{equation}\label{eq:hinge}
+    \min_{w,v} \: \frac{1}{m}\sum_{i=1}^m \max(0,1-y_i(x_i^Tw + v)).
+\end{equation}
+
+We seek to find a classifier $(w,v)$ that can be implemented with low precision (say, as an integer vector). To this end, we modify the training problem so that it accounts for the implementation error, when approximating the original optimal (full precision) weight vector $w_*$ with a low-precision one, $\tilde{w}$.  We bound the corresponding error as $\|\tilde{w}-w_*\|_\infty \le \epsilon$ for some given absolute error bound $\epsilon >0$; for example, if $\tilde{w}$ is the nearest integer vector, the error is bounded by $\epsilon = 0.5$. Then, we seek to solve the \emph{robust counterpart} to~(\ref{eq:hinge}):
+\begin{equation}\label{eq:robust-hinge}
+    \min_{w,v} \: \max_{\substack{\tilde{w} \::\: \|\tilde{w}-w\|_\infty \le \epsilon \\ \tilde{v} \::\: |\tilde{v}-v| \le \epsilon}} \: \frac{1}{m}
+    \sum_{i=1}^m \max(0, 1-y_i(x_i^T\tilde{w} + \tilde{v}) ).
+\end{equation}
+\begin{enumerate}
+    \item Justify the use of the hinge loss function in problem~(\ref{eq:hinge}); in particular, explain geometrically what it means to have a zero loss.
+
+    \item Show that without loss of generality, we can reformulate this problem as a robust optimization over the variable $w$ only, which we will do henceforth.
+
+    {\em Hint:} Think about modifying the data vectors $x_i$.
+
+    \item Explain how to obtain a low-precision classifier once problem~(\ref{eq:robust-hinge}) is solved. What guarantees do we have on the training error?
+
+    \item Show that the optimal value of problem~(\ref{eq:robust-hinge}) is bounded above by
+\begin{equation}\label{eq:more-slack}
+    \min_{w} \: \frac{1}{m}\sum_{i=1}^m \max(0, 1-y_i(x_i^Tw)+\epsilon \|x_i\|_1).
+\end{equation}
+
+\item Assume that the data set is normalized, in the sense that $\|x_i\|_1 = 1$, $i=1,\ldots,m$. How would you solve problem~(\ref{eq:more-slack}) if you had code to solve~(\ref{eq:hinge}) only?
+\end{enumerate}
+
+\begin{solution}
+% Your solution here
+\end{solution}
+
+\end{document}
