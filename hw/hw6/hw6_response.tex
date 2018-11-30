@@ -118,11 +118,13 @@ You may assume throughout the exercise that the problem is strictly feasible.
 
 \item $D(\lambda)$ can be computed by recognizing that each element of $p$, $p_i$ can be maximized independently of any other element. So we can solve this set of 1-D maximization problems via bisection
     \begin{align*}
-        D(\lambda)_i = \max_{p_i} \max_p r(p) + \lambda (r(p)(\beta - 1) + c^T d(p))
+        D(\lambda) &= \max_{p_i} \sum_{i=1}^n r(p_i) + \lambda (r(p_i)(\beta - 1) + c^T d_i(p_i)) \\
+        &= \sum_{i=1}^n \max_{p_i} p^T d_i(p_i) + \lambda (p^T d_i(p_i)(\beta - 1) + c^T d_i(p_i))
     \end{align*}
-    These bisections take $\mathcal{O}(n log(n))$ time, and solving for $\lambda^*$ is just another bisection, so it will take $\mathcal{O}(n)$ time, ignoring all the logarithmic factors.
+    To do all these bisections to compute $D(\lambda)$ takes $\mathcal{O}(n)$ time. Solving for $\lambda^*$ is just another bisection, and it will take $\mathcal{O}(log(\epsilon)) \rightarrow \mathcal{O}(1)$ time.
 
-\item Using $\lambda^*$, plug it for $\lambda$ in the $p^*$ equation, then reduce the maximization over $p$ to $n$ 1-D maximizations over $p_i$ and solve each one using bisection to find $p^*$. The time complexity is $\mathcal{O}(n)$.
+\item Using $\lambda^*$, plug it for $\lambda$ in the $d^*$ equation and find $d^*$ already knowing $p^*$. Since Slater's condition holds, strong duality holds, and $p^* = d^*$. So the time complexity is $\mathcal{O}(1)$.
+%, then reduce the maximization over $p$ to $n$ 1-D maximizations over $p_i$ and solve each one using bisection to find $p^*$. The time complexity is $\mathcal{O}(n)$.
 \end{enumerate}
 \end{solution}
 
