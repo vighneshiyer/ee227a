@@ -346,6 +346,31 @@ Optimal water volumes, T_opt:
  [30. 65. 15.]
  [80. 80. -0.]]
     \end{minted}
+
+\item The goal is to encourage sparsity in the vector $\|T_i - \hat{T_i}\|_2$, which is evaluated on rows $i = 1, \dots, J$. So put the L1 norm of that vector as a penalty term in the objective.
+    \begin{align*}
+        R(X) = \|\|X_i - \hat{X_i}\|_2 \quad \forall i = 1, \dots, J\|_1
+    \end{align*}
+
+\item The new objective became:
+    \begin{minted}{python}
+obj = cvx.Minimize(V[:,0] * w_l - V[:,K-1] * w_l - cvx.sum(cvx.multiply(rho_lam, T)) +
+                   gamma * cvx.sum(
+                       [cvx.norm(T[j] - T_hat[j], 2) for j in range(J)]
+                   ))
+    \end{minted}
+
+    With $\gamma = 10^{10}$ I didn't see any change in $T_{opt,reg}$. I had to lower to $\gamma = 1$ see the function minimized further and a different result, with a changed second row.
+
+    \begin{minted}{text}
+Optimal value:
+-4244.1110298
+
+Optimal water volumes, T_opt_reg:
+[[ 0. 55.  0.]
+ [30. 65.  0.]
+ [80. 80. -0.]]
+    \end{minted}
 \end{enumerate}
 \end{solution}
 
