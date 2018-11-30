@@ -150,7 +150,62 @@ Our goal is to find the best sequence of trades $s$ so as to minimize the execut
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item $A$ is a lower triangular matrix with 1s in the lower triangle and 0s in the upper triangle. $q$ is a vector with all elements $p_0$.
+        \begin{align*}
+            A &= \begin{bmatrix}
+                1 & 0 & 0 & \dots & 0 \\
+                1 & 1 & 0 & \dots & 0 \\
+                1 & 1 & 1 & \ddots & 0 \\
+                \ddots & \ddots & \ddots & \ddots & 0 \\
+                1 & 1 & 1 & 1 & 1
+            \end{bmatrix} \\
+            q &= \begin{bmatrix} p_0 & p_0 & \dots & p_0 \end{bmatrix}^T
+        \end{align*}
+    \item The problem can be stated as:
+    \begin{align*}
+        \min_{s,p} \sum_{t=1}^T p_t s_t \quad : \quad s^T \mathbf{1} = \overline{s}, s \geq 0, p = A(\alpha s + r) + q
+    \end{align*}
+    The first 2 constraints are a linear equality and a linear inequality. The final constraint can be expanded into multiple affine equalities:
+    \begin{align*}
+        p - \alpha A s &= A r + q \rightarrow \\
+        p_1 - s_1 &= r_1 + q_1 \\
+        p_2 - (s_1 + s_2) &= (r_1 + r_2) + q_2 \\
+        \vdots \\
+        p_T - (s_1 + \dots + s_T) &= r_T + q_T
+    \end{align*}
+    which are all convex equality constraints.
+
+    The objective isn't convex because the quadratic matrix has negative eigenvalues and thus isn't PSD. Here's how it looks (assuming $T = 2$):
+    \begin{align*}
+        x &= \begin{bmatrix} p_1 & \dots & p_T & s_1 & \dots & s_T \end{bmatrix}^T \\
+        &p_1 s_1 + \dots + p_T s_T = x^T Q x \\
+        Q &= \begin{bmatrix}
+            0 & 0 & 1/2 & 0 \\
+            0 & 0 & 0 & 1/2 \\
+            1/2 & 0 & 0 & 0 \\
+            0 & 1/2 & 0 & 0
+            \end{bmatrix}
+    \end{align*}
+    Which has negative eigenvalues of -0.5, and isn't PSD. This structure generalizes for any $T$. This isn't a convex problem.
+
+    \item Write as a QP (by moving the equation for $p$ into the objective)
+    \begin{align*}
+        &\min_{s,p} \sum_{t=1}^T p_t s_t \\
+        &=\min_{s,p} s^T p \\
+        &=\min_{s} s^T (A(\alpha s + r) + q) \\
+        &=\min_{s} \alpha s^T A s + s^T A r + s^T q
+    \end{align*}
+    The second and third terms are clearly linear in $s$ and are convex. The first quadratic term can be analyzed further:
+    \begin{align*}
+        &s^T A s = s^T Q s \text{ for } Q = \frac{1}{2} (A + A^T) \\
+        &\text{because } s^T (\frac{1}{2} (A + A^T)) s = \frac{1}{2} s^T A s + \frac{1}{2} s^T A^T s = s^T A s \\
+        &\text{then } 2Q - I \text{ is a matrix of all ones, which is trivially PSD}
+    \end{align*}
+    If $2Q - I$ is PSD then $2Q \geq I$ and $Q$ is PSD; so the first term of the objective is convex quadratic.
+
+    The same constraints $s^T \mathbf{1} = 1$ and $s \geq 0$ still apply which are linear, so this is a QP.
+\end{enumerate}
 \end{solution}
 
 \newpage
