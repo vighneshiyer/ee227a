@@ -12,6 +12,7 @@
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage{amsthm,amssymb}
+\usepackage{minted}
 \setlength\parindent{0pt}
 \newcommand{\solution}{\subsection*{Solution:}}
 \newcommand{\Lagr}{\mathcal{L}}
@@ -303,7 +304,49 @@ Reservoir $l = 2$: $V_{23} = V_{22} + A_{23} + (T_{13} + T_{23}) - T_{33}$.
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item In this case we have 2 reservoirs ($l_1, l_2$), 3 turbines ($j_1, j_2, j_3$) of which $j_1, j_2$ and $j_3$ are downstream from reservoir $l_1$ and $l_2$ respectively. On generic timestep $k$:
+    \begin{align*}
+        V_{1,k} &= V_{1,k-1} + A_{1,k} - (T_{1,k} + T_{2,k}) \\
+        V_{2,k} &= V_{2,k-1} + A_{2,k} + (T_{1,k} + T_{2,k}) - T_{3,k}
+    \end{align*}
+    And expanding these out gives us the flow equations in the problem statement.
+
+    \item
+    \begin{minted}{python}
+rho_tiled = np.reshape(np.repeat(rho, K), (J, K))
+lam_tiled = np.tile(lam, (J, 1))
+rho_lam = np.multiply(rho_tiled, lam_tiled)
+V = cvx.Variable((L,K))
+T = cvx.Variable((J,K))
+obj = cvx.Minimize(V[:,0] * w_l - V[:,K-1] * w_l - cvx.sum(cvx.multiply(rho_lam, T)))
+constraints = [T >= np.zeros((J,K)), T <= T_max, V >= V_min, V <= V_max,
+               V[0, 0] == V_0[0] + A[0, 0] - (T[0, 0] + T[1, 0]),
+               V[1, 0] == V_0[1] + A[1, 0] + (T[0, 0] + T[1, 0]) - T[2, 0],
+               V[0, 1] == V[0, 0] + A[0, 1] - (T[0, 1] + T[1, 1]),
+               V[1, 1] == V[1, 0] + A[1, 1] + (T[0, 1] + T[1, 1]) - T[2, 1],
+               V[0, 2] == V[0, 1] + A[0, 2] - (T[0, 2] + T[1, 2]),
+               V[1, 2] == V[1, 1] + A[1, 2] + (T[0, 2] + T[1, 2]) - T[2, 2]
+              ]
+prob = cvx.Problem(obj, constraints)
+prob.solve()
+obj_val = prob.value
+T_opt = np.array(T.value)
+
+# Round values for readability (optional)
+obj_val = np.around(obj_val, decimals=7)
+T_opt = np.around(T_opt, decimals=0)
+    \end{minted}
+    \begin{minted}{text}
+Optimal value:
+-4117.4826773
+
+Optimal water volumes, T_opt:
+[[ 0. 55.  0.]
+ [30. 65. 15.]
+ [80. 80. -0.]]
+    \end{minted}
+\end{enumerate}
 \end{solution}
 
 \newpage
