@@ -405,7 +405,18 @@ We seek to find a classifier $(w,v)$ that can be implemented with low precision 
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item The lower bound of the hinge-loss function is 0, which is attained when for every data point $y_i (x_i^T \omega + v) \geq 1$, which begins to hold when the classifier is perfect and the weight and bias has been adjusted to make the product $\geq 1$. Geometrically this means that the half spaces $\omega^T x + v \leq -1$ and $\omega^T x + v \geq 1$ contain all the points in each of their respective categories.
+
+    \item This can be done by adding a new variable to each $x_i$ datapoint with value 1 and adding another variable to $\omega$. Formally:
+    \begin{align*}
+        x_i' &= [x_{i,0}, \dots, x_{i,n}, 1] \quad \forall i = 1, \dots, m \\
+        \omega' &= [\omega_0, \dots, \omega_n, v] \\
+        X' &\in \mathbb{R}^{n+1 \times m} \\
+        \omega' &\in \mathbb{R}^{n+1} \\
+        \min_{\omega'} &\frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i'^T \omega'))
+    \end{align*}
+\end{enumerate}
 \end{solution}
 
 \end{document}
