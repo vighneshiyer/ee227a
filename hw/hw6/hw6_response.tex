@@ -416,6 +416,39 @@ We seek to find a classifier $(w,v)$ that can be implemented with low precision 
         \omega' &\in \mathbb{R}^{n+1} \\
         \min_{\omega'} &\frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i'^T \omega'))
     \end{align*}
+
+    \item After finding $w$ and from the robust optimization problem, round up each element of $w$ to the nearest multiple of $2 * \epsilon$. For example, if $\epsilon = 0.5$, 0.1 would be rounded to 0, and 0.6 would be rounded to 1.0. The training error of the low-precision $w$ vector will be no worse than the solution to the robust optimization problem since it has considered the worst case deviation values for $\tilde{w}$.
+
+    \item Expand the inner maximization constraint:
+    \begin{align*}
+        &\max_{\tilde{w} : \|\tilde{w} - w\|_{\infty} \leq \epsilon} \rightarrow \\
+        &\max(|\tilde{w}_i - w_i|) \leq \epsilon \quad \forall i = 1, \dots, n+1 \\
+        &|\tilde{w}_1 - w_1| \leq \epsilon \\
+        &\dots \\
+        &|\tilde{w}_{n+1} - w_{n+1}| \leq \epsilon
+    \end{align*}
+
+    Take the worst case where every $| \tilde{w}_i - w_i | = \epsilon$, then write the objective's upper bound:
+    \begin{align*}
+        \leq &\min_{w} \frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i^T (w \pm \epsilon)) \\
+        &\min_{w} \frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i^T w \pm x_i \epsilon)) \\
+        &\min_{w} \frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i^T w) \pm y_i x_i \epsilon)) \\
+        &\min_{w} \frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i^T w) + \max_{y_i: \|y_i\|_{\infty} \leq 1} y_i x_i \epsilon)) \\
+        &\min_{w} \frac{1}{m} \sum_{i=1}^m \max(0, 1 - y_i(x_i^T w) + \|x_i\|_1 \epsilon)) \\
+    \end{align*}
+
+    \item Augument each data point $x_i$ with another variable with fixed value $-\frac{\epsilon}{y_i}$ for the $y_i$ associated with that $x_i$. Add another entry to $w$ for the new variable in each data point $x_i$.
+
+    \begin{align*}
+        x_i' &= [x_1, \dots, x_n, -\frac{\epsilon}{y_i}] \\
+        w' &= [w_1, \dots, w_n, w_{n+1}]
+    \end{align*}
+
+    Solve the problem (2) using $x_i', w'$. To recover the solution to (4) normalize the solution $w_{opt}$ by dividing it by $|w_{opt,n+1}|$ and removing the last element.
+
+    \begin{align*}
+        w_{opt,problem4} = \frac{w_{opt,problem2}}{w_{opt,problem2,n+1}}
+    \end{align*}
 \end{enumerate}
 \end{solution}
 
