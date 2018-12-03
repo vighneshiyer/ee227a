@@ -61,7 +61,32 @@ Explain why $\min_{t \geq 0} \: \kappa t + t f(a_i/t)$ and $\min_{t \geq 0} \: \
 \end{enumerate}
 
 \begin{solution}
-% Your solution here
+\begin{enumerate}
+    \item
+        \begin{align*}
+            f(v) = f^{**}(v) &= \max_z z^T v - f^*(z) \\
+            p^* &= \min_w \max_z z^T X^T w - f^*(z) + \lambda \|w\|_1 \\
+            &= \min_w \max_z z^T X^T w - f^*(z) + \max_{\|k\|_{\infty} \leq \lambda} k^T w \\
+            &= \min_w \max_{z, \|k\|_{\infty} \leq \lambda} - f^*(z) + z^T X^T w + k^T w \\
+            &= \min_w \max_{z, \|k\|_{\infty} \leq \lambda} - f^*(z) + (Xz + k)^T w \\
+            d^* &= \max_{z, \|k\|_{\infty} \leq \lambda} \min_w - f^*(z) + (Xz + k)^T w \\
+            &= \max_{z} -f^*(z) \quad : \quad \|Xz\|_{\infty} \leq \lambda
+        \end{align*}
+
+    \item $-k = -f^*(v_0)$ is a lower bound on $d^*$. If a $v$ is strictly feasible $\|X v_0\|_{\infty} < \lambda$, then the condition $\lambda > |a_i^T v|$ holds. If $v$ is maximized subject to $f^*(v) \leq k$ for the objective $\max_v |a_i^T v|$ and the objective is $< \lambda$, then it implies that $a_i$ doesn't affect the optimal value of $d^*$ since the constraint imposed by $a_i$ isn't active at the optimum.
+
+    \item
+        \begin{align*}
+            &\max_v |a_i^T v| \quad : \quad f^*(v) \leq k \\
+            &\max_v \min_t |a_i^T v| - (f^*(v) - k)t \\
+            &\max_v \min_t |a_i^T v| - (\max_z z^T v - f(z) - k)t \\
+            &\max_{z,v} \min_t |a_i^T v| - z^T v t + t f(z) + kt \\
+            &\max (\min_t t f(\frac{|a_i|}{t} + kt)) \\
+            &\max (\min_t t f(\frac{a_i}{t} + kt), \min_t t f(\frac{-a_i}{t} + kt))
+        \end{align*}
+
+    The function $kt$ is convex in $t$ since it is linear, and the perspective function $t f(x/t)$ is convex, so the sum is also convex.
+\end{enumerate}
 \end{solution}
 
 \newpage
